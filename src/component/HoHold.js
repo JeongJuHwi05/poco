@@ -1,15 +1,11 @@
-import React, { Component } from "react";
+import React from 'react';
 
-export class HoHold extends Component {
-    render(){
-        return(
-            <header>
-                <p>
-                    <span>HoHold</span>
-                </p>
-            </header>
-        )
-    }
+function HoHold() {
+  return (
+    <div>
+      <h1>HoHold</h1>
+    </div>
+  );
 }
 
-export default HoHold
+export default HoHold;

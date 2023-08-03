@@ -1,33 +1,20 @@
-import React, {Component} from 'react';
-import { NavLink } from "react-router-dom";
+import React, { Component } from "react";
+import { BrowserRouter, NavLink } from 'react-router-dom';
 
-class Nav extends Component {
+
+export class Nav extends Component {
     render(){
         return(
-            <nav>
-                <div>
-                    <NavLink to="/">
-                    Home
-                    </NavLink>
-                </div>
-                <div>
-                    <NavLink to="/hoHold">
-                    HoHold
-                    </NavLink>
-                </div>
-                <div>
-                    <NavLink to="/spenPatt">
-                    SpenPatt
-                    </NavLink>
-                </div>
-                <div>
-                    <NavLink to="/fixed">
-                    Fixed
-                    </NavLink>
-                </div>
-            </nav>
+            <BrowserRouter>
+                <nav>
+                    <p><NavLink to='/'>Home</NavLink></p>
+                    <p><NavLink to='/topics'>Topics</NavLink></p>
+                    <p><NavLink to='/contact'>Contact</NavLink></p>
+                </nav>
+            </BrowserRouter>
         );
     }
-}
+};
+
 
 export default Nav;

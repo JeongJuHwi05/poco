@@ -1,38 +1,92 @@
+/* 스마트폰 */
+@media (max-width: 767px) {
+    nav img {
+      width: 80px; /* 원하는 크기로 설정 */
+      height: auto; /* 너비에 따라 자동으로 높이 조정 */
+    }
+}
+
+/* 태블릿 */
+@media (min-width: 768px) and (max-width: 1023px) {
+
+  nav {
+    font-size: 100%;
+    font-weight: 800;
+  }
+
+  nav img {
+    width: 150px; /* 원하는 크기로 설정 */
+    height: auto; /* 너비에 따라 자동으로 높이 조정 */
+  }
+
+  .topMenu{
+    display: flex;
+  }
+
+  nav ul {
+    width: 500px;
+    height: auto;
+    display: flex;
+    margin: auto;
+    justify-content: space-between;
+  }
+}
+
+/* 데스크톱 */
+@media (min-width: 1024px) {
+  nav {
+    font-size: 150%;
+    font-weight: 700;
+  }
+
+  nav img {
+    width: 200px; /* 원하는 크기로 설정 */
+    height: auto; /* 너비에 따라 자동으로 높이 조정 */
+  }
+
+  .topMenu{
+    display: flex;
+  }
+
+  nav ul {
+    width: 700px;
+    height: 75px;
+    display: flex;
+    margin: auto;
+    margin-top: 0;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
 .App {
-  text-align: center;
+  font-size: 16px;
+  margin: 15px 30px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+nav {
+  width: 100%;
+  height: 75px;
+  background-color: bisque;
+  text-decoration: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+nav ul {
+  list-style-type: none;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+nav button {
+  width: 150px;
+  height: 50px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+nav button:hover{
+  background-color: rgba(0, 74, 173,0.7);
+}
+
+nav button:active{
+  background-color: rgb(0, 74, 173);
   color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
