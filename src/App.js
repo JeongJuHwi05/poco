@@ -6,7 +6,7 @@ import { useMediaQuery } from 'react-responsive';
 import { useEffect,useState } from 'react';
 
 import { db } from './firebase';
-import { collection, getDocs, doc } from '@firebase/firestore';
+import { collection, getDocs, addDoc } from '@firebase/firestore';
 
 import Home from "./component/Home";
 import HoHold from "./component/HoHold";
@@ -14,24 +14,32 @@ import SpenPatt from "./component/SpenPatt";
 import Fixed from "./component/Fixed";
   
 function App() {
+
+  // 데이터를 저장할 state 생성
+  const [importData, setImportData] = useState([]);
+  const [exportData, setExportData] = useState([]);
+
   // 데이터베이스 연결 객체 생성
-  const pocoCollectionRef = collection(db, 'poco')
-  console.log(pocoCollectionRef);
+  const importCollectionRef = collection(db, 'importCoin');
+  const exportCollectionRef = collection(db, 'exportCoin');
 
-  useEffect( () => {
-    // async 사용해서 비동기 식으로 사용
+  useEffect(() => {
     const getList = async () => {
-      // getDocs(DB 연결객체)로 데이터 가져오기
-      // query(DB 연결객체, orderBy("기준열","정렬 방식"))
+      // import 컬렉션 데이터 가져오기
+      const importData = await getDocs(importCollectionRef);
+      setImportData(
+        importData.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      );
 
-      const data = await getDocs(
-        pocoCollectionRef
-      )
-    }
+      // export 컬렉션 데이터 가져오기
+      const exportData = await getDocs(exportCollectionRef);
+      setExportData(
+        exportData.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      );
+    };
 
     getList();
-  },[])
-
+  }, []);
 
   // 크기 여부를 확인하는 상태 변수
   const isMobile = useMediaQuery({ maxWidth: 767 });
@@ -61,6 +69,17 @@ function App() {
       return activeButton === buttonValue.substr(1) ? 'activeMBtn' : '';
     } else {
       return activeButton === buttonValue ? 'activeBtn' : '';
+    }
+  };
+
+  // 데이터 추가 함수
+  const addDataToFirestore = async (newData) => {
+    try {
+      const collectionName = newData.moneyValue === '수입' ? 'importCoin' : 'exportCoin';
+      await addDoc(collection(db, collectionName), newData);
+      console.log('Data added successfully');
+    } catch (error) {
+      console.error('Error adding document:', error);
     }
   };
 
@@ -122,13 +141,14 @@ function App() {
         
         <main>
           <Routes>
-            <Route path="/" element={<Home/>}/>
+            <Route path="/" element={<Home importData={importData} exportData={exportData} onAddData={addDataToFirestore} />} />
             <Route path="/HoHold/*" element={<HoHold />}/>
             <Route path="/SpenPatt" element={<SpenPatt />}/>
             <Route path="/Fixed" element={<Fixed />}/>
             <Route path="/*" element={<NotFound />}/>
           </Routes>
         </main>
+
       </div>
     </BrowserRouter>
   );
