@@ -6,7 +6,7 @@ import { useMediaQuery } from 'react-responsive';
 import { useEffect,useState } from 'react';
 
 import { db } from './firebase';
-import { collection, getDocs, addDoc } from '@firebase/firestore';
+import { collection, doc, getDocs, addDoc, deleteDoc, query, where } from '@firebase/firestore';
 
 import Home from "./component/Home";
 import HoHold from "./component/HoHold";
@@ -14,14 +14,18 @@ import SpenPatt from "./component/SpenPatt";
 import Fixed from "./component/Fixed";
   
 function App() {
+  // 렌더링 상태를 체크하기 위한 state 추가
+  const [changed, setChanged] = useState(false)
 
   // 데이터를 저장할 state 생성
   const [importData, setImportData] = useState([]);
   const [exportData, setExportData] = useState([]);
+  const [fixedData, setFixedData] = useState([]);
 
   // 데이터베이스 연결 객체 생성
   const importCollectionRef = collection(db, 'importCoin');
   const exportCollectionRef = collection(db, 'exportCoin');
+  const fixedCollectionRef = collection(db, 'fixedCoin');
 
   useEffect(() => {
     const getList = async () => {
@@ -36,10 +40,17 @@ function App() {
       setExportData(
         exportData.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
       );
+
+      // export 컬렉션 데이터 가져오기
+      const fixedData = await getDocs(fixedCollectionRef);
+      setFixedData(
+        fixedData.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      );
     };
 
     getList();
-  }, []);
+    setChanged(false)
+  }, [changed]);
 
   // 크기 여부를 확인하는 상태 변수
   const isMobile = useMediaQuery({ maxWidth: 767 });
@@ -73,14 +84,47 @@ function App() {
   };
 
   // 데이터 추가 함수
-  const addDataToFirestore = async (newData) => {
+  const handleAddData = async (newData) => {
     try {
       const collectionName = newData.moneyValue === '수입' ? 'importCoin' : 'exportCoin';
       await addDoc(collection(db, collectionName), newData);
+      setChanged(true)
       console.log('Data added successfully');
     } catch (error) {
       console.error('Error adding document:', error);
     }
+  };
+
+  // 데이터 추가 함수
+  const handleAddFixedData = async (fixedCoinData) => {
+    try {
+      await addDoc(collection(db, 'fixedCoin'), fixedCoinData);
+      setChanged(true)
+      console.log('Fixed Data added successfully');
+    } catch (error) {
+      console.error('Error adding document:', error);
+    }
+  };
+
+  // fixed 데이터 삭제
+  const handleDeleteData = async (id, fixedId, moneyValue) => {
+      try {
+          // fixedCoin에서 데이터 삭제
+          await deleteDoc(doc(db, 'fixedCoin', id));
+          console.log('FixedData deleted successfully');
+
+          // importCoin 또는 exportCoin에서 해당 fixedId와 일치하는 데이터 삭제
+          const collectionToCheck = moneyValue === '수입' ? 'importCoin' : 'exportCoin';
+          const querySnapshot = await getDocs(query(collection(db, collectionToCheck), where('fixedId', '==', fixedId)));
+          querySnapshot.forEach(async (doc) => {
+              await deleteDoc(doc.ref);
+          });
+
+          console.log('Related data deleted successfully');
+          setChanged(true);
+      } catch (error) {
+          console.error('Error deleting document:', error);
+      }
   };
 
   return (
@@ -141,10 +185,10 @@ function App() {
         
         <main>
           <Routes>
-            <Route path="/" element={<Home importData={importData} exportData={exportData} onAddData={addDataToFirestore} />} />
+            <Route path="/" element={<Home importData={importData} exportData={exportData} onAddData={handleAddData} />} />
             <Route path="/HoHold/*" element={<HoHold />}/>
             <Route path="/SpenPatt" element={<SpenPatt />}/>
-            <Route path="/Fixed" element={<Fixed />}/>
+            <Route path="/Fixed" element={<Fixed fixedData={fixedData} onAddData={handleAddData} onFixedAddData={handleAddFixedData} onDeleteData={handleDeleteData}/>}/>
             <Route path="/*" element={<NotFound />}/>
           </Routes>
         </main>

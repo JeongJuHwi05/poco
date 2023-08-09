@@ -8,7 +8,7 @@ function Home({ importData, exportData, onAddData }) {
     setInputDtValue(e.target.value);
   };
 
-  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedMoneyValue, setSelectedMoneyValue] = useState('수입');
   const [inputContentValue, setContentValue] = useState('');
   const [inputMoneyValue, setMoneyValue] = useState('');
   const [inputInputDtValue, setInputDtValue] = useState(localStorage.getItem('lastSelectedDate') || new Date().toISOString().substr(0, 10));
@@ -16,7 +16,7 @@ function Home({ importData, exportData, onAddData }) {
 
   const handleAddData = () => {
     const newData = {
-      moneyValue: selectedValue,
+      moneyValue: selectedMoneyValue,
       content: inputContentValue,
       money: parseFloat(inputMoneyValue),
       inputDt: inputInputDtValue ? new Date(inputInputDtValue) : new Date(),
@@ -28,10 +28,10 @@ function Home({ importData, exportData, onAddData }) {
     onAddData(newData);
 
     // 입력값 초기화
-    setSelectedValue('수입');
+    setSelectedMoneyValue('수입');
     setContentValue('');
     setMoneyValue('');
-    setInputDtValue();
+    setInputDtValue(new Date().toISOString().substr(0, 10));
     setTagValue('');
   };
 
@@ -92,6 +92,24 @@ function Home({ importData, exportData, onAddData }) {
     const optionsDt = { year: 'numeric', month: '2-digit', day: '2-digit' };
     return new Date(date).toLocaleDateString('ko-KR', optionsDt).replace(/ /g, '').replace(/\./g, '-').slice(0, -1);
   };
+  
+  // 최근 내역에서 보여줄 데이터 8개
+  const [visibleDataCount, setVisibleDataCount] = useState(8);
+  // 데이터 배열을 필요한 갯수만큼 slice하기
+  const visibleData = data.slice(0, visibleDataCount);
+
+  // 더보기 버튼 클릭하면 8개씩 더 가져오기
+  const showMore = () => {
+    setVisibleDataCount(prevCount => prevCount + 8);
+    setIsShowMore(true);
+  };
+
+  const hideMore = () => {
+    setVisibleDataCount(8);
+    setIsShowMore(false);
+  };
+
+  const [isShowMore, setIsShowMore] = useState(false);
 
   // 태그가 있을 때만 #을 붙여서 리턴
   const formatTag = (tag) => {
@@ -118,11 +136,7 @@ function Home({ importData, exportData, onAddData }) {
             <tbody>
                 <tr>
                   <td>
-                    <select
-                      value={selectedValue}
-                      onChange={e => setSelectedValue(e.target.value)}
-                      placeholder="지출입 콤보박스"
-                    >
+                    <select value={selectedMoneyValue} onChange={e => setSelectedMoneyValue(e.target.value)}>
                       <option value="수입">수입</option>
                       <option value="지출">지출</option>
                     </select>
@@ -166,8 +180,8 @@ function Home({ importData, exportData, onAddData }) {
             </thead>
             <tbody>
                 <tr>
-                  <td>{ getCurrentMonthExportTotal().toLocaleString() } 원</td>
                   <td>{ getCurrentMonthImportTotal().toLocaleString() } 원</td>
+                  <td>{ getCurrentMonthExportTotal().toLocaleString() } 원</td>
                 </tr>
             </tbody>
           </table>
@@ -187,8 +201,9 @@ function Home({ importData, exportData, onAddData }) {
                 <th>날짜</th>
               </tr>
             </thead>
+
             <tbody>
-              {data.map((item, index) => (
+              {visibleData.map((item, index) => (
                 <tr key={index}>
                   <td>{item.moneyValue}</td>
                   <td>{item.content}</td>
@@ -201,7 +216,9 @@ function Home({ importData, exportData, onAddData }) {
           </table>
         </div>
 
-        <button className='moreBtn' type='button'>더보기</button>
+        <button className='moreBtn' type='button' onClick={isShowMore ? hideMore : showMore}>
+          {isShowMore ? '모두 접기' : '더보기'}
+        </button>
       </div>
     </div>
   );
