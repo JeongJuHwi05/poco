@@ -10,6 +10,7 @@ function Fixed({ fixedData, onAddData, onFixedAddData, onDeleteData }) {
     const [inputFixedDt, setFixedValue] = useState('01');
     const [inputMoneyValue, setMoneyValue] = useState('');
     const [inputTagValue, setTagValue] = useState('');
+    const [filterValue, setFilterValue] = useState('전체');
 
     function generateFixedData(inputDt, moneyValue, content, money, tag, fixedId) {
         const currentDate = new Date();
@@ -48,8 +49,8 @@ function Fixed({ fixedData, onAddData, onFixedAddData, onDeleteData }) {
             fixedDt: inputFixedDt,
             fixedId: fixedId,
             tag: inputTagValue,
-            startDt:fixedData[0].insertDt,
-            lastDt: fixedData[5].insertDt,
+            startDt:fixedData[0].inputDt,
+            lastDt: fixedData[5].inputDt,
         };
         
         // 원래 데이터를 추가하는 처리
@@ -83,9 +84,11 @@ function Fixed({ fixedData, onAddData, onFixedAddData, onDeleteData }) {
     return(
         <div className='fixedApp'>
             <div>
-                <div><button type='button'>전체</button></div>
-                <div><button type='button'>수입</button></div>
-                <div><button type='button'>지출</button></div>
+                <div>
+                    <button type='button' onClick={() => setFilterValue('전체')}>전체</button>
+                    <button type='button' onClick={() => setFilterValue('수입')}>수입</button>
+                    <button type='button' onClick={() => setFilterValue('지출')}>지출</button>
+                </div>
             </div>
 
             <div className='contentDiv'>
@@ -156,18 +159,20 @@ function Fixed({ fixedData, onAddData, onFixedAddData, onDeleteData }) {
                         </thead>
 
                         <tbody>
-                            {fixedData.map((item, index) => (
-                                <tr key={index}>
-                                    <td>{item.moneyValue}</td>
-                                    <td>{item.content}</td>
-                                    <td>{item.money}</td>
-                                    <td>매월 {item.fixedDt}</td>
-                                    <td>{item.tag}</td>
-                                    <td>{formatDate(item.startDt.toDate())}</td>
-                                    <td>{formatDate(item.lastDt.toDate())}</td>
-                                    <td><button type='button' onClick={() => handleDeleteFixedData(item.id, item.fixedId, item.moneyValue)}>삭제</button></td>
-                                </tr>
-                            ))}
+                            {fixedData
+                                .filter(item => filterValue === '전체' || item.moneyValue === filterValue)
+                                .map((item, index) => (
+                                    <tr key={index}>
+                                        <td>{item.moneyValue}</td>
+                                        <td>{item.content}</td>
+                                        <td>{item.money}</td>
+                                        <td>매월 {item.fixedDt}</td>
+                                        <td>{item.tag}</td>
+                                        <td>{formatDate(item.startDt.toDate())}</td>
+                                        <td>{formatDate(item.lastDt.toDate())}</td>
+                                        <td><button type='button' onClick={() => handleDeleteFixedData(item.id, item.fixedId, item.moneyValue)}>삭제</button></td>
+                                    </tr>
+                                ))}
                         </tbody>
                     </table>
                 </div>
