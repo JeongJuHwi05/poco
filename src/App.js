@@ -186,7 +186,7 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<Home importData={importData} exportData={exportData} onAddData={handleAddData} />} />
-            <Route path="/HoHold/*" element={<HoHold />}/>
+            <Route path="/HoHold/*" element={<HoHold importData={importData} exportData={exportData} onAddData={handleAddData} onDeleteData={handleDeleteData}/>}/>
             <Route path="/SpenPatt" element={<SpenPatt exportData={exportData} />}/>
             <Route path="/Fixed" element={<Fixed fixedData={fixedData} onAddData={handleAddData} onFixedAddData={handleAddFixedData} onDeleteData={handleDeleteData}/>}/>
             <Route path="/*" element={<NotFound />}/>
