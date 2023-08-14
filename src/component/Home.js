@@ -1,9 +1,10 @@
 import '../css/Home.css';
 import '../reset.css';
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-function Home({ importData, exportData, onAddData }) {  
+function Home({ importData, exportData, onAddData }) {
+  // 달력 데이터 변경 시
   const handleDateChange = e => {
     setInputDtValue(e.target.value);
   };
@@ -35,42 +36,28 @@ function Home({ importData, exportData, onAddData }) {
     setTagValue('');
   };
 
-  // 현재 월의 import 데이터의 money를 더하는 함수
-  const getCurrentMonthImportTotal = () => {
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
+  // 현재 월의 import 데이터와 export 데이터의 money를 더하는 함수
+  const getCurrentMonthTotal = (isImport) => {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth() + 1;
 
-    const importTotal = importData
-      .filter(value => {
-        const valueDate = value.inputDt.toDate();
-        return valueDate.getFullYear() === currentYear && valueDate.getMonth() + 1 === currentMonth;
-      })
-      .reduce((total, value) => total + value.money, 0);
+      const data = isImport ? importData : exportData;
 
-    return importTotal;
+      const total = data
+          .filter(value => {
+              const valueDate = value.inputDt.toDate();
+              return valueDate.getFullYear() === currentYear && valueDate.getMonth() + 1 === currentMonth;
+          })
+          .reduce((acc, value) => acc + value.money, 0);
+
+      return total;
   };
 
-  // 현재 월의 export 데이터의 money를 더하는 함수
-  const getCurrentMonthExportTotal = () => {
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
-
-    const exportTotal = exportData
-      .filter(value => {
-        const valueDate = value.inputDt.toDate();
-        return valueDate.getFullYear() === currentYear && valueDate.getMonth() + 1 === currentMonth;
-      })
-      .reduce((total, value) => total + value.money, 0);
-
-    return exportTotal;
-  };
-
-  // 현재 월의 수입과 지출 차액을 구하는 함수
-  const getCurrentMonthBalance = () => {
-    return getCurrentMonthImportTotal() - getCurrentMonthExportTotal();
-  };
+    // 현재 월의 수입과 지출 차액을 구하는 함수
+    const getCurrentMonthBalance = () => {
+      return getCurrentMonthTotal(true) - getCurrentMonthTotal(false);
+    };
 
 
   // 최근 내역을 출력하기 위해 importData와 exportData inputDt 순으로 정렬
@@ -180,8 +167,8 @@ function Home({ importData, exportData, onAddData }) {
             </thead>
             <tbody>
                 <tr>
-                  <td>{ getCurrentMonthImportTotal().toLocaleString() } 원</td>
-                  <td>{ getCurrentMonthExportTotal().toLocaleString() } 원</td>
+                  <td>{ getCurrentMonthTotal(true).toLocaleString() } 원</td>
+                  <td>{ getCurrentMonthTotal(false).toLocaleString() } 원</td>
                 </tr>
             </tbody>
           </table>
