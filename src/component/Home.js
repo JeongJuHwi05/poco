@@ -93,19 +93,24 @@ function Home({ importData, exportData, onAddData }) {
   const [visibleDataCount, setVisibleDataCount] = useState(8);
   // 데이터 배열을 필요한 갯수만큼 slice하기
   const visibleData = data.slice(0, visibleDataCount);
+  const [isShowMore, setIsShowMore] = useState(false);
+  const [divHeight, setDivHeight] = useState(370); // 초기 높이값 설정
 
   // 더보기 버튼 클릭하면 8개씩 더 가져오기
   const showMore = () => {
-    setVisibleDataCount(prevCount => prevCount + 8);
+    const newDivHeight = divHeight + (data.length - 8) * 35;
+    console.log(newDivHeight);
+
+    setVisibleDataCount(data.length);
+    setDivHeight(newDivHeight);
     setIsShowMore(true);
   };
 
   const hideMore = () => {
     setVisibleDataCount(8);
+    setDivHeight(370);
     setIsShowMore(false);
   };
-
-  const [isShowMore, setIsShowMore] = useState(false);
 
   // 태그가 있을 때만 #을 붙여서 리턴
   const formatTag = (tag) => {
@@ -119,39 +124,40 @@ function Home({ importData, exportData, onAddData }) {
       <div className='contentDiv'>
         <h3 className='subTitle'>새로운 소비 내역 추가하기</h3>
         <div className='tableDiv newInput'>
-          <table className='inputTable'>
-            <thead>
+          <table className="inputTable">
+            <tbody>
+
               <tr>
                 <th>지출입</th>
-                <th>내역</th>
-                <th>금액</th>
-              </tr>
-            </thead>
-            <tbody>
-                <tr>
-                  <td>
-                    <select value={selectedMoneyValue} onChange={e => setSelectedMoneyValue(e.target.value)}>
-                      <option value="수입">수입</option>
-                      <option value="지출">지출</option>
-                    </select>
-                  </td>
-                  <td><input type="text" value={inputContentValue} onChange={e => setContentValue(e.target.value)} placeholder="내역을 입력해주세요." /></td>
-                  <td><input type="text" value={inputMoneyValue} onChange={e => setMoneyValue(e.target.value)} placeholder="금액을 입력해주세요." /> 원</td>
-                </tr>
-            </tbody>
+                <td>
+                  <select value={selectedMoneyValue} onChange={(e) => setSelectedMoneyValue(e.target.value)}>
+                    <option value="수입">수입</option>
+                    <option value="지출">지출</option>
+                  </select>
+                </td>
 
-            
-            <thead>
+                <th>내역</th>
+                <td>
+                  <input type="text" value={inputContentValue} onChange={(e) => setContentValue(e.target.value)} placeholder="내역을 입력해주세요." />
+                </td>
+
+                <th>금액</th>
+                <td>
+                  <input type="text" value={inputMoneyValue} onChange={(e) => setMoneyValue(e.target.value)} placeholder="금액을 입력해주세요." />{" "} 원
+                </td>
+              </tr>
+
               <tr>
                 <th>날짜</th>
+                <td>
+                  <input type="date" value={inputInputDtValue || ""} onChange={handleDateChange} />
+                </td>
+
                 <th>태그</th>
+                <td>
+                  #<input type="text" value={inputTagValue} onChange={(e) => setTagValue(e.target.value)} placeholder="태그를 입력해주세요." />
+                </td>
               </tr>
-            </thead>
-            <tbody>
-                <tr>
-                  <td><input type='date' value={inputInputDtValue || ''} onChange={handleDateChange}/></td>
-                  <td>#<input type="text" value={inputTagValue} onChange={e => setTagValue(e.target.value)} placeholder="태그를 입력해주세요." /></td>
-                </tr>
             </tbody>
           </table>
 
@@ -185,7 +191,7 @@ function Home({ importData, exportData, onAddData }) {
 
       <div>
         <h3 className='subTitle'>최근 내역</h3>
-        <div className='tableDiv lastListDiv'>
+        <div className='tableDiv' style={{ height: `${divHeight}px` }}>
           <table className="lastListTable">
             <thead>
               <tr>

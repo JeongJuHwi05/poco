@@ -27,42 +27,70 @@
 
 /* 스마트폰 */
 @media (max-width: 767px) {
+
+    /* inputTable의 테이블 행을 각각 1열로 조정 */
+    .inputTable tbody tr {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+    }
+
+    /* inputTable의 각 셀 스타일 조정 */
+    .inputTable td,
+    .inputTable th {
+        width: 100%;
+        display: block;
+        box-sizing: border-box;
+        text-align: left;
+    }
 }
 
 /* 태블릿 */
 @media (min-width: 768px) and (max-width: 1023px) {
 
-}
+    /* 새로운 소비 내역 추가하기 영역 */
 
-/* 데스크톱 */
-@media (min-width: 1024px) {
+    /* inputTable의 테이블 행을 3개로 조정 */
+    .inputTable tbody tr {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-gap: 10px;
+    }
 
     /* 새로운 소비 내역 추가하기 영역 */
     .subTitle {
-        font-size: 150%;
+        font-size: 120%;
     }
 
     .newInput {
-        height: 350px;
+        height: 550px;
         position: relative;
     }
 
     .inputTable{
-        width: 1500px;
-        height: 300px;
-        font-size: 120%;
-        margin: auto;
-        margin-top: 20px;
+        min-width: 768px;
+        max-width: 1023px;
+        height: 450px;
+        font-size: 100%;
+        margin: 20px 10px;
         table-layout: fixed;
-        border-collapse: separate;  /* 테이블 셀 경계를 분리 (border-spacing을 적용하려면 필요) */
-        border-spacing: 10px 15px;  /* 수직 간격을 10px로 설정, 수평 간격은 0으로 설정 */
+
+        background-color: aquamarine;
+    }
+
+    .inputTable th{
+        width: 60px;
+        text-align: left; /* 가로 왼쪽 정렬 */
+    }
+
+    .inputTable td{
+        width: 200px;
     }
 
     .inputTable th,
     .inputTable td {
-        padding: 10px;
-        text-align: left;   /* 가로 왼쪽 정렬 */
-        vertical-align: middle;  /* 세로 가운데 정렬 */
+        border: 1px solid black;
     }
 
     .inputTable input {
@@ -71,16 +99,12 @@
     }
 
     .inputTable input[type="text"] {
-        width: 300px;
+        width: 200px;
     }
 
     select {
         border-bottom: 1px solid #BBBEBB;
-        width: 35%;
-    }
-
-    .inputTable button{
-        margin-left: 176px;
+        width: 77%;
     }
 
     .addBtn{
@@ -90,12 +114,12 @@
         color: white;
         font-size: 120%;
         font-weight: bold;
-        padding: 15px 35px;
         cursor: pointer;
+        padding: 15px 35px;
 
         position: absolute;
-        right: 4%;
-        bottom: 18%;
+        right: 3%;
+        bottom: 4%;
     }
 
     .addBtn:hover{
@@ -132,15 +156,12 @@
 
     /* 최근 내역 영역 */
 
-    .lastListDiv{
-        height: 370px;
-    }
-
     .lastListTable{
         width: 100%;
         font-size: 120%;
         margin: auto;
         margin-top: 20px;
+        margin-bottom: 50px;
         table-layout: fixed;
     }
 
@@ -159,5 +180,150 @@
         width: 100%;
         height: 50px;
         margin-top: 20px;
+        
+        border: 3px solid #004aad;
+        border-radius: 5px;
+        background-color: #004aad;
+        color: white;
+        font-size: 120%;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .moreBtn:hover{
+        border: 3px solid #004aad;
+        background-color: white;
+        color: #004aad;
+    }
+}
+
+/* 데스크톱 */
+@media (min-width: 1024px) {
+
+    /* 새로운 소비 내역 추가하기 영역 */
+    .subTitle {
+        font-size: 150%;
+    }
+
+    .newInput {
+        height: 350px;
+        position: relative;
+    }
+
+    .inputTable{
+        width: 1500px;
+        height: 300px;
+        font-size: 120%;
+        margin: auto;
+        margin-top: 20px;
+        table-layout: fixed;
+    }
+
+    .inputTable th{
+        width: 80px;
+        text-align: left; /* 가로 왼쪽 정렬 */
+    }
+
+    .inputTable input {
+        border-bottom: 1px solid #BBBEBB; /* 밑줄 스타일 지정 */
+        padding: 2px; /* 내부 여백 설정 */
+    }
+
+    .inputTable input[type="text"] {
+        width: 250px;
+    }
+
+    select {
+        border-bottom: 1px solid #BBBEBB;
+        width: 40%;
+    }
+    
+    .addBtn{
+        border: 3px solid #004aad;
+        border-radius: 25px;
+        background-color: #004aad;
+        color: white;
+        font-size: 120%;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 15px 35px;
+
+        position: absolute;
+        right: 3%;
+        bottom: 10%;
+    }
+
+    .addBtn:hover{
+        border: 3px solid #004aad;
+        background-color: white;
+        color: #004aad;
+    }
+
+    /* 이번달 자산 현황 영역 */
+    .contentDiv h2{
+        font-size: 200%;
+        margin-top: 10px;
+    }
+
+    .conditionDiv {
+        height: 150px;
+    }
+
+    .conditionTable{
+        width: 1200px;
+        height: 130px;
+        font-size: 120%;
+        margin: auto;
+        margin-top: 20px;
+        table-layout: fixed;
+    }
+
+    .conditionTable th,
+    .conditionTable td {
+        padding: 10px;
+        text-align: center;   /* 가로 왼쪽 정렬 */
+        vertical-align: middle;  /* 세로 가운데 정렬 */
+    }
+
+    /* 최근 내역 영역 */
+
+    .lastListTable{
+        width: 100%;
+        font-size: 120%;
+        margin: auto;
+        margin-top: 20px;
+        margin-bottom: 50px;
+        table-layout: fixed;
+    }
+
+    .lastListTable th{
+        height: 50px;
+    }
+
+    .lastListTable th,
+    .lastListTable td {
+        padding: 5px;
+        text-align: center;   /* 가로 왼쪽 정렬 */
+        vertical-align: middle;  /* 세로 가운데 정렬 */
+    }
+
+    .moreBtn{
+        width: 100%;
+        height: 50px;
+        margin-top: 20px;
+        
+        border: 3px solid #004aad;
+        border-radius: 5px;
+        background-color: #004aad;
+        color: white;
+        font-size: 120%;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .moreBtn:hover{
+        border: 3px solid #004aad;
+        background-color: white;
+        color: #004aad;
     }
 }
