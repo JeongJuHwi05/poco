@@ -95,7 +95,7 @@ function App() {
     }
   };
 
-  // 데이터 추가 함수
+  // fixed데이터 추가 함수
   const handleAddFixedData = async (fixedCoinData) => {
     try {
       await addDoc(collection(db, 'fixedCoin'), fixedCoinData);
@@ -106,8 +106,20 @@ function App() {
     }
   };
 
-  // fixed 데이터 삭제
-  const handleDeleteData = async (id, fixedId, moneyValue) => {
+  // 데이터 삭제
+  const handleDeleteData = async (id, moneyValue, fixedId) => {
+    if (!fixedId) {
+      try {
+        // importCoin 또는 exportCoin에서 Id와 일치하는 데이터 삭제
+        const collectionName = moneyValue === '수입' ? 'importCoin' : 'exportCoin';
+        await deleteDoc(doc(db, collectionName, id));
+
+        console.log('Related data deleted successfully(일반)');
+        setChanged(true)
+      } catch (error) {
+          console.error('Error deleting document:', error);
+      }
+    } else{
       try {
           // fixedCoin에서 데이터 삭제
           await deleteDoc(doc(db, 'fixedCoin', id));
@@ -125,6 +137,7 @@ function App() {
       } catch (error) {
           console.error('Error deleting document:', error);
       }
+    }
   };
 
   return (
@@ -186,7 +199,7 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<Home importData={importData} exportData={exportData} onAddData={handleAddData} />} />
-            <Route path="/HoHold/*" element={<HoHold importData={importData} exportData={exportData} onAddData={handleAddData} onDeleteData={handleDeleteData}/>}/>
+            <Route path="/HoHold/*" element={<HoHold importData={importData} exportData={exportData} onDeleteData={handleDeleteData}/>}/>
             <Route path="/SpenPatt" element={<SpenPatt exportData={exportData} />}/>
             <Route path="/Fixed" element={<Fixed fixedData={fixedData} onAddData={handleAddData} onFixedAddData={handleAddFixedData} onDeleteData={handleDeleteData}/>}/>
             <Route path="/*" element={<NotFound />}/>

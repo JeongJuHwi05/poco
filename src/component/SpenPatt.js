@@ -2,6 +2,7 @@ import '../reset.css';
 import '../css/SpenPatt.css';
 
 import React, { useEffect, useState } from "react";
+//npm install react-chartjs-2 chart.js
 import { Bar } from 'react-chartjs-2';
 import { CategoryScale, Chart, LinearScale, BarElement } from "chart.js";
 Chart.register(CategoryScale, LinearScale, BarElement);

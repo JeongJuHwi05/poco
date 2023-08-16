@@ -69,8 +69,8 @@ function Fixed({ fixedData, onAddData, onFixedAddData, onDeleteData }) {
         setTagValue('');
     };
 
-    const handleDeleteFixedData = (id, fixedId, moneyValue) => {
-        onDeleteData(id, fixedId, moneyValue);
+    const handleDeleteFixedData = (id, moneyValue, fixedId) => {
+        onDeleteData(id, moneyValue, fixedId);
     };
 
     const fixedDtOptions = ['01', '10', '15', '20', '25'];
@@ -161,6 +161,7 @@ function Fixed({ fixedData, onAddData, onFixedAddData, onDeleteData }) {
                         <tbody>
                             {fixedData
                                 .filter(item => filterValue === '전체' || item.moneyValue === filterValue)
+                                .sort((a, b) => b.insertDt.toDate() - a.insertDt.toDate()) // 정렬 추가
                                 .map((item, index) => (
                                     <tr key={index}>
                                         <td>{item.moneyValue}</td>
@@ -170,9 +171,10 @@ function Fixed({ fixedData, onAddData, onFixedAddData, onDeleteData }) {
                                         <td>{item.tag}</td>
                                         <td>{formatDate(item.startDt.toDate())}</td>
                                         <td>{formatDate(item.lastDt.toDate())}</td>
-                                        <td><button type='button' onClick={() => handleDeleteFixedData(item.id, item.fixedId, item.moneyValue)}>삭제</button></td>
+                                        <td><button type='button' onClick={() => handleDeleteFixedData(item.id, item.moneyValue, item.fixedId)}>삭제</button></td>
                                     </tr>
-                                ))}
+                                ))
+                            }
                         </tbody>
                     </table>
                 </div>

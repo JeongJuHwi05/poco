@@ -1,88 +1,175 @@
 import '../reset.css';
 import '../css/HoHold.css';
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-function HoHold({ importData, exportData, onAddData, onDeleteData }) {
-  
-  const [filterValue, setFilterValue] = useState('일일');
-  const [dtValue, setDtValue] = useState(localStorage.getItem('lastSelectedDate') || new Date().toISOString().substr(0, 10));
+// npm install react-datepicker
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css'; // 스타일 import
+import { ko } from "date-fns/esm/locale";
+
+function HoHold({ importData, exportData, onDeleteData }) {
+  const [filterValue, setFilterValue] = useState('day');
   const [selectedDtSortValue, setSelectedDtSortValue] = useState('최신순');
+  
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+  
+  const [dtValue, setDtValue] = useState(() => {
+    if (filterValue === 'year') {
+      return currentYear.toString();
+    } else if (filterValue === 'month') {
+      return `${currentYear}-${currentMonth < 10 ? '0' : ''}${currentMonth}`;
+    } else {
+      return localStorage.getItem('lastSelectedDate') || new Date().toISOString().substr(0, 10);
+    }
+  });
 
-  const handleDateChange = e => {
-    setDtValue(e.target.value);
+  const handleDateChange = (e) => {
+    if (filterValue === 'year') {
+      setDtValue(e.getFullYear().toString());
+    } else if (filterValue === 'month') {
+      var getMonth = e.getMonth() + 1;
+      setDtValue(`${e.getFullYear()}-${getMonth < 10 ? '0' : ''}${getMonth}`);
+    } else {
+      setDtValue(e.target.value);
+    }
   };
 
-  // 현재 월의 import 데이터의 money를 더하는 함수
-  const getCurrentMonthImportTotal = () => {
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
-
-    const importTotal = importData
-      .filter(value => {
-        const valueDate = value.inputDt.toDate();
-        return valueDate.getFullYear() === currentYear && valueDate.getMonth() + 1 === currentMonth;
-      })
-      .reduce((total, value) => total + value.money, 0);
-
-    return importTotal;
+  const handleMonthChange = (newDate) => {
+    const year = newDate.getFullYear();
+    const month = newDate.getMonth() + 1;
+    setDtValue(`${year}-${month < 10 ? '0' : ''}${month}`);
   };
+  
+  // 현재 일, 월, 년의 import 데이터와 export 데이터의 money를 더하는 함수
+  const getCurrentTotal = (filterValue) => {
+    const selectedDate = new Date(dtValue);
+    const selectedYear = selectedDate.getFullYear();
+    const selectedMonth = selectedDate.getMonth() + 1;
+    const selectedDay = selectedDate.getDate();
 
-  // 현재 월의 export 데이터의 money를 더하는 함수
-  const getCurrentMonthExportTotal = () => {
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
+    let importTotal = 0;
+    let exportTotal = 0;
 
-    const exportTotal = exportData
-      .filter(value => {
-        const valueDate = value.inputDt.toDate();
-        return valueDate.getFullYear() === currentYear && valueDate.getMonth() + 1 === currentMonth;
-      })
-      .reduce((total, value) => total + value.money, 0);
+    switch (filterValue) {
+      case 'year':
+        importTotal = importData
+          .filter(value => {
+            const valueDate = new Date(value.inputDt.toDate());
+            return valueDate.getFullYear() === selectedYear;
+          })
+          .reduce((total, value) => total + value.money, 0);
 
-    return exportTotal;
+        exportTotal = exportData
+          .filter(value => {
+            const valueDate = new Date(value.inputDt.toDate());
+            return valueDate.getFullYear() === selectedYear;
+          })
+          .reduce((total, value) => total + value.money, 0);
+        break;
+      case 'month':
+        importTotal = importData
+          .filter(value => {
+            const valueDate = new Date(value.inputDt.toDate());
+            return valueDate.getFullYear() === selectedYear && valueDate.getMonth() + 1 === selectedMonth;
+          })
+          .reduce((total, value) => total + value.money, 0);
+
+        exportTotal = exportData
+          .filter(value => {
+            const valueDate = new Date(value.inputDt.toDate());
+            return valueDate.getFullYear() === selectedYear && valueDate.getMonth() + 1 === selectedMonth;
+          })
+          .reduce((total, value) => total + value.money, 0);
+        break;
+      case 'day':
+        importTotal = importData
+          .filter(value => {
+            const valueDate = new Date(value.inputDt.toDate());
+            return (
+              valueDate.getFullYear() === selectedYear &&
+              valueDate.getMonth() + 1 === selectedMonth &&
+              valueDate.getDate() === selectedDay
+            );
+          })
+          .reduce((total, value) => total + value.money, 0);
+
+        exportTotal = exportData
+          .filter(value => {
+            const valueDate = new Date(value.inputDt.toDate());
+            return (
+              valueDate.getFullYear() === selectedYear &&
+              valueDate.getMonth() + 1 === selectedMonth &&
+              valueDate.getDate() === selectedDay
+            );
+          })
+          .reduce((total, value) => total + value.money, 0);
+        break;
+      default:
+        break;
+    }
+    return { importTotal, exportTotal };
   };
 
   // 현재 월의 수입과 지출 차액을 구하는 함수
-  const getCurrentMonthBalance = () => {
-    return getCurrentMonthImportTotal() - getCurrentMonthExportTotal();
+  const getCurrentMoneyBalance = (filterValue) => {
+    return getCurrentTotal(filterValue).importTotal - getCurrentTotal(filterValue).exportTotal;
   };
 
   // 최근 내역을 출력하기 위해 importData와 exportData inputDt 순으로 정렬
-  const dayData = [...importData, ...exportData]
+  const hoHoldDataList = [...importData, ...exportData]
     .filter(item => {
-      const now = new Date();
-      const currentYear = now.getFullYear();
-      const currentMonth = now.getMonth() + 1;
-      const currentDay = now.getDay();
-
       const valueDate = item.inputDt.toDate();
       const valueYear = valueDate.getFullYear();
       const valueMonth = valueDate.getMonth() + 1;
+      const valueDay = valueDate.getDate();
 
-      return currentYear === valueYear && currentMonth === valueMonth && currentDay === dtValue;
+      const selectedYear = parseInt(dtValue.substring(0, 4), 10);
+      const selectedMonth = parseInt(dtValue.substring(5, 7), 10);
+      const selectedDay = parseInt(dtValue.substring(8, 10), 10);
+
+      return (
+        (filterValue === 'day' && valueYear === selectedYear && valueMonth === selectedMonth && valueDay === selectedDay) ||
+        (filterValue === 'month' && valueYear === selectedYear && valueMonth === selectedMonth) ||
+        (filterValue === 'year' && valueYear === selectedYear)
+      );
     })
     .sort((a, b) => {
       const aDate = a.inputDt.toDate();
       const bDate = b.inputDt.toDate();
-      return aDate - bDate; // 날짜 오름차순으로 정렬
+
+      if (selectedDtSortValue === '최신순') {
+        return bDate - aDate; // 날짜 내림차순으로 정렬
+      } else if (selectedDtSortValue === '과거순') {
+        return aDate - bDate; // 날짜 오름차순으로 정렬
+      }
+      
+      return 0; // 정렬 순서가 선택되지 않은 경우에는 순서 변경 없음
+    })
+    .sort((b, a) => {
+      const aInsertDate = a.insertDt.toDate();
+      const bInsertDate = b.insertDt.toDate();
+      return aInsertDate - bInsertDate; // insertDt 순으로 정렬
     });
+  
+  // year일 때 데이터 담을 객체
+  const groupedMonthData = {};
 
-  // 최근 내역을 출력하기 위해 importData와 exportData inputDt 순으로 정렬
-  const monthData = [...importData, ...exportData]
-    .filter(item => {
-      const now = new Date();
-      const currentYear = now.getFullYear();
-      const currentMonth = now.getMonth() + 1;
+  // year일 때 데이터 월별로 가공
+  hoHoldDataList.forEach(item => {
+    const date = new Date(item.inputDt.toDate());
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const key = `${year}-${month < 10 ? '0' : ''}${month}`;
 
-      const valueDate = item.inputDt.toDate();
-      const valueYear = valueDate.getFullYear();
-      const valueMonth = valueDate.getMonth() + 1;
+    if (!groupedMonthData[key]) {
+      groupedMonthData[key] = [];
+    }
 
-      return currentYear === valueYear && currentMonth === valueMonth;
-    }).sort((a, b) => b.inputDt.toDate() - a.inputDt.toDate());
+    groupedMonthData[key].push(item);
+  });
   
   // 최근 내역 날짜포맷 수정
   const formatDate = (date) => {
@@ -97,15 +184,19 @@ function HoHold({ importData, exportData, onAddData, onDeleteData }) {
     }
   };
 
+  // 데이터 삭제
+  const handleDeleteData = (id, moneyValue) => {
+    onDeleteData(id, moneyValue);
+  };
+
   return (
     <div>
-      <div className='day'>
+      <div>
         <div>
-          <button type='button' onClick={() => setFilterValue('일일')}>일일</button>
-          <button type='button' onClick={() => setFilterValue('월별')}>월별</button>
-          <button type='button' onClick={() => setFilterValue('연간')}>연간</button>
+          <button type='button' onClick={() => { setFilterValue('day'); setDtValue(new Date().toISOString().substr(0, 10)); }}>일일</button>
+          <button type='button' onClick={() => { setFilterValue('month'); setDtValue(`${new Date().getFullYear()}-${(new Date().getMonth() + 1) < 10 ? '0' : ''}${new Date().getMonth() + 1}`); }}>월별</button>
+          <button type='button' onClick={() => { setFilterValue('year'); setDtValue(new Date().getFullYear().toString()); }}>연간</button>
         </div>
-
         <hr />
         
         <div>
@@ -118,11 +209,11 @@ function HoHold({ importData, exportData, onAddData, onDeleteData }) {
               </tr>
             </thead>
             <tbody>
-                <tr>
-                  <td>{ getCurrentMonthImportTotal().toLocaleString() } 원</td>
-                  <td>{ getCurrentMonthExportTotal().toLocaleString() } 원</td>
-                  <td>{ getCurrentMonthBalance().toLocaleString() } 원</td>
-                </tr>
+              <tr>
+                <td>{getCurrentTotal(filterValue).importTotal.toLocaleString()} 원</td>
+                <td>{getCurrentTotal(filterValue).exportTotal.toLocaleString()} 원</td>
+                <td>{getCurrentMoneyBalance(filterValue).toLocaleString()} 원</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -130,17 +221,68 @@ function HoHold({ importData, exportData, onAddData, onDeleteData }) {
         <hr/>
 
         <div>
-          <input type='date' value={dtValue || ''} onChange={handleDateChange} />
-          <select value={selectedDtSortValue} onChange={e => setSelectedDtSortValue(e.target.value)}>
-            <option value="최신순">최신순</option>
-            <option value="과거순">과거순</option>
-          </select>
+          <div>
+            {/* day 형식으로 달력 표시 */}
+            {filterValue === 'day' && (
+              <input
+                type='date'
+                value={dtValue || ''}
+                onChange={handleDateChange}
+              />
+            )}
+            {/* Month 형식으로 달력 표시 */}
+            {filterValue === 'month' && (
+              <DatePicker
+                locale={ko}
+                selected={new Date(dtValue)}
+                onChange={handleMonthChange}
+                dateFormat="yyyy-MM"
+                showMonthYearPicker
+                monthFormat="MM"
+                yearDropdownItemNumber={10}
+                yearDropdownScrollable
+                scrollableYearDropdown
+              />
+            )}
+
+            {/* Year 형식으로 달력 표시 */}
+            {filterValue === 'year' && (
+              <DatePicker
+                selected={new Date(dtValue)}
+                onChange={handleDateChange}
+                dateFormat="yyyy"
+                showYearPicker
+              />
+            )}
+          </div>
+
+          <button type='button' onClick={() => {
+            if (filterValue === 'day') {
+              setDtValue(new Date().toISOString().substr(0, 10));
+            } else if (filterValue === 'month') {
+              const now = new Date();
+              setDtValue(`${now.getFullYear()}-${now.getMonth() + 1 < 10 ? '0' : ''}${now.getMonth() + 1}`);
+            } else if (filterValue === 'year') {
+              setDtValue(new Date().getFullYear().toString());
+            }
+            setFilterValue(filterValue);
+          }}>
+            현재
+          </button>
         </div>
 
         <hr />
         
         <div>
-          <h3 className='subTitle'>최근 내역</h3>
+          <div>
+            <p className='subTitle'>최근 내역</p>
+
+            <select value={selectedDtSortValue} onChange={e => setSelectedDtSortValue(e.target.value)}>
+              <option value="최신순">최신순</option>
+              <option value="과거순">과거순</option>
+            </select>
+          </div>
+
           <div className='lastList'>
             <table className="">
               <thead>
@@ -153,28 +295,55 @@ function HoHold({ importData, exportData, onAddData, onDeleteData }) {
                 </tr>
               </thead>
 
-              <tbody>
-                {dayData.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.moneyValue}</td>
-                    <td>{item.content}</td>
-                    <td>{item.money.toLocaleString()}</td>
-                    <td>{formatTag(item.tag)}</td>
-                    <td>{formatDate(item.inputDt.toDate())}</td>
-                  </tr>
-                ))}
-              </tbody>
+              {filterValue === 'year' ? (
+                  <>
+                    {Object.entries(groupedMonthData).map(([key, data], index) => (
+                      <tbody key={index}>
+                        <tr className="monthHeader">
+                          <td colSpan="5">{`${key.split('-')[1]}월`}</td>
+                        </tr>
+                        {data.map((item, index) => (
+                          <tr key={index}>
+                            <td>{item.moneyValue}</td>
+                            <td>{item.content}</td>
+                            <td>{item.money.toLocaleString()}</td>
+                            <td>{formatTag(item.tag)}</td>
+                            <td>{formatDate(item.inputDt.toDate())}</td>
+                            {item.fixedId ? (
+                              <td>고정 지출입 입니다.</td>
+                            ) : (
+                              <td>
+                                <button type='button' onClick={() => handleDeleteData(item.id, item.moneyValue)}>삭제</button>
+                              </td>
+                            )}
+                          </tr>
+                        ))}
+                      </tbody>
+                    ))}
+                  </>
+                ) : (
+                  <tbody>
+                    {hoHoldDataList.map((item, index) => (
+                      <tr key={index}>
+                        <td>{item.moneyValue}</td>
+                        <td>{item.content}</td>
+                        <td>{item.money.toLocaleString()}</td>
+                        <td>{formatTag(item.tag)}</td>
+                        <td>{formatDate(item.inputDt.toDate())}</td>
+                        {item.fixedId ? (
+                          <td>고정 지출입 입니다.</td>
+                        ) : (
+                          <td>
+                            <button type='button' onClick={() => handleDeleteData(item.id, item.moneyValue)}>삭제</button>
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                )}
             </table>
           </div>
         </div>
-      </div>
-
-      <div className='month'>
-
-      </div>
-
-      <div className='year'>
-
       </div>
     </div>
   );
