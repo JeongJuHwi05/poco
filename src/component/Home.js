@@ -126,7 +126,6 @@ function Home({ importData, exportData, onAddData }) {
         <div className='tableDiv newInput'>
           <table className="inputTable">
             <tbody>
-
               <tr>
                 <th>지출입</th>
                 <td>
@@ -145,9 +144,7 @@ function Home({ importData, exportData, onAddData }) {
                 <td>
                   <input type="text" value={inputMoneyValue} onChange={(e) => setMoneyValue(e.target.value)} placeholder="금액을 입력해주세요." />{" "} 원
                 </td>
-              </tr>
 
-              <tr>
                 <th>날짜</th>
                 <td>
                   <input type="date" value={inputInputDtValue || ""} onChange={handleDateChange} />
@@ -209,7 +206,7 @@ function Home({ importData, exportData, onAddData }) {
                   <td>{item.moneyValue}</td>
                   <td>{item.content}</td>
                   <td>{item.money.toLocaleString()}</td>
-                  <td>{formatTag(item.tag)}</td>
+                  <td className="align-left">{formatTag(item.tag)}</td>
                   <td>{formatDate(item.inputDt.toDate())}</td>
                 </tr>
               ))}
