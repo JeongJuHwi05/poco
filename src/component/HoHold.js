@@ -1,14 +1,32 @@
 import '../reset.css';
-import '../css/HoHold.css';
+import stylesHoHold from '../css/HoHold.module.css';
 
-import React, { useState } from "react";
+import React, { useState, forwardRef } from "react";
 
 // npm install react-datepicker
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'; // 스타일 import
 import { ko } from "date-fns/esm/locale";
 
-function HoHold({ importData, exportData, onDeleteData }) {
+const CustomDatePickerInput = forwardRef(({ value, onClick, onChange }, ref) => {
+  return (
+    <input
+      className={`${stylesHoHold.inputStyle} ${stylesHoHold.customDatePickerInput}`}
+      type='text'
+      value={value}
+      onClick={onClick}
+      onChange={onChange} // onChange 핸들러 추가
+      style={{
+        textAlign: 'center',
+        width: '160px',
+        height: '35px',
+      }}
+      ref={ref} // ref 전달
+    />
+  );
+})
+
+export default function HoHold({ importData, exportData, onDeleteData }) {
   const [filterValue, setFilterValue] = useState('day');
   const [selectedDtSortValue, setSelectedDtSortValue] = useState('최신순');
   
@@ -137,8 +155,8 @@ function HoHold({ importData, exportData, onDeleteData }) {
       );
     })
     .sort((a, b) => {
-      const aDate = a.inputDt.toDate();
-      const bDate = b.inputDt.toDate();
+      const aDate = a.insertDt.toDate();
+      const bDate = b.insertDt.toDate();
 
       if (selectedDtSortValue === '최신순') {
         return bDate - aDate; // 날짜 내림차순으로 정렬
@@ -147,60 +165,62 @@ function HoHold({ importData, exportData, onDeleteData }) {
       }
       
       return 0; // 정렬 순서가 선택되지 않은 경우에는 순서 변경 없음
-    })
-    .sort((b, a) => {
-      const aInsertDate = a.insertDt.toDate();
-      const bInsertDate = b.insertDt.toDate();
-      return aInsertDate - bInsertDate; // insertDt 순으로 정렬
     });
   
-  // year일 때 데이터 담을 객체
-  const groupedMonthData = {};
+    // year일 때 데이터 담을 객체
+    const groupedMonthData = {};
 
-  // year일 때 데이터 월별로 가공
-  hoHoldDataList.forEach(item => {
-    const date = new Date(item.inputDt.toDate());
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const key = `${year}-${month < 10 ? '0' : ''}${month}`;
+    // year일 때 데이터 월별로 가공
+    hoHoldDataList.forEach(item => {
+      const date = new Date(item.inputDt.toDate());
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const key = `${year}-${month < 10 ? '0' : ''}${month}`;
 
-    if (!groupedMonthData[key]) {
-      groupedMonthData[key] = [];
-    }
+      if (!groupedMonthData[key]) {
+        groupedMonthData[key] = [];
+      }
 
-    groupedMonthData[key].push(item);
-  });
+      groupedMonthData[key].push(item);
+    });
   
-  // 최근 내역 날짜포맷 수정
-  const formatDate = (date) => {
-    const optionsDt = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    return new Date(date).toLocaleDateString('ko-KR', optionsDt).replace(/ /g, '').replace(/\./g, '-').slice(0, -1);
-  };
+  const windowWidth = window.innerWidth;
+  
+    const formatDate = (date) => {
+      const optionsDt = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      if (windowWidth >= 1024) {
+          return new Date(date).toLocaleDateString('ko-KR', optionsDt).replace(/ /g, '').replace(/\./g, '-').slice(0, -1);
+      } else if (windowWidth >= 768 && windowWidth < 1024) {
+          return new Date(date).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' }).replace('.', '-').slice(0, -1);
+      } else {
+          return new Date(date).toLocaleDateString('ko-KR', {day: '2-digit' }).replace('.', '-').slice(0, -1);
+      }
+    };
 
-  // 태그가 있을 때만 #을 붙여서 리턴
-  const formatTag = (tag) => {
-    if (tag) {
-      return "#"+tag
-    }
-  };
 
-  // 데이터 삭제
-  const handleDeleteData = (id, moneyValue) => {
-    onDeleteData(id, moneyValue);
-  };
+    // 태그가 있을 때만 #을 붙여서 리턴
+    const formatTag = (tag) => {
+      if (tag) {
+        return "#"+tag
+      }
+    };
+
+    // 데이터 삭제
+    const handleDeleteData = (id, moneyValue) => {
+      onDeleteData(id, moneyValue);
+    };
 
   return (
-    <div>
+    <div className='app'>
       <div>
-        <div>
-          <button type='button' onClick={() => { setFilterValue('day'); setDtValue(new Date().toISOString().substr(0, 10)); }}>일일</button>
-          <button type='button' onClick={() => { setFilterValue('month'); setDtValue(`${new Date().getFullYear()}-${(new Date().getMonth() + 1) < 10 ? '0' : ''}${new Date().getMonth() + 1}`); }}>월별</button>
-          <button type='button' onClick={() => { setFilterValue('year'); setDtValue(new Date().getFullYear().toString()); }}>연간</button>
+        <div className={stylesHoHold.dtCategoryBtnDiv}>
+          <button className={`${stylesHoHold.dtCategoryBtn} ${filterValue === 'day' ? stylesHoHold.activeBtn : ''}`} type='button' onClick={() => { setFilterValue('day'); setDtValue(new Date().toISOString().substr(0, 10)); }}>일일</button>
+          <button className={`${stylesHoHold.dtCategoryBtn} ${filterValue === 'month' ? stylesHoHold.activeBtn : ''}`} type='button' onClick={() => { setFilterValue('month'); setDtValue(`${new Date().getFullYear()}-${(new Date().getMonth() + 1) < 10 ? '0' : ''}${new Date().getMonth() + 1}`); }}>월별</button>
+          <button className={`${stylesHoHold.dtCategoryBtn} ${filterValue === 'year' ? stylesHoHold.activeBtn : ''}`} type='button' onClick={() => { setFilterValue('year'); setDtValue(new Date().getFullYear().toString()); }}>연간</button>
         </div>
-        <hr />
         
-        <div>
-          <table>
+        <div className={stylesHoHold.contentDiv}>
+          <table className={stylesHoHold.conditionTable}>
             <thead>
               <tr>
                 <th>수입</th>
@@ -218,13 +238,12 @@ function HoHold({ importData, exportData, onDeleteData }) {
           </table>
         </div>
 
-        <hr/>
-
-        <div>
-          <div>
+        <div className={stylesHoHold.dtValueContainer}>
+          <div className={stylesHoHold.dtValueCalenderDiv}>
             {/* day 형식으로 달력 표시 */}
             {filterValue === 'day' && (
               <input
+                className={stylesHoHold.inputStyle}
                 type='date'
                 value={dtValue || ''}
                 onChange={handleDateChange}
@@ -242,6 +261,7 @@ function HoHold({ importData, exportData, onDeleteData }) {
                 yearDropdownItemNumber={10}
                 yearDropdownScrollable
                 scrollableYearDropdown
+                customInput={<CustomDatePickerInput onChange={handleMonthChange} />}
               />
             )}
 
@@ -252,11 +272,12 @@ function HoHold({ importData, exportData, onDeleteData }) {
                 onChange={handleDateChange}
                 dateFormat="yyyy"
                 showYearPicker
+                customInput={<CustomDatePickerInput onChange={handleDateChange} />}
               />
             )}
           </div>
 
-          <button type='button' onClick={() => {
+          <button className={stylesHoHold.nowBtn} type='button' onClick={() => {
             if (filterValue === 'day') {
               setDtValue(new Date().toISOString().substr(0, 10));
             } else if (filterValue === 'month') {
@@ -270,83 +291,85 @@ function HoHold({ importData, exportData, onDeleteData }) {
             현재
           </button>
         </div>
-
-        <hr />
         
         <div>
-          <div>
-            <p className='subTitle'>최근 내역</p>
+          <div className={stylesHoHold.lastListTitle}>
+            <h3 className={stylesHoHold.subTitle}>최근 내역</h3>
 
-            <select value={selectedDtSortValue} onChange={e => setSelectedDtSortValue(e.target.value)}>
-              <option value="최신순">최신순</option>
-              <option value="과거순">과거순</option>
+            <select className={stylesHoHold.dtSortSelect} value={selectedDtSortValue} onChange={e => setSelectedDtSortValue(e.target.value)}>
+              <option value="최신순">오름차순</option>
+              <option value="과거순">내림차순</option>
             </select>
           </div>
 
-          <div className='lastList'>
-            <table className="">
-              <thead>
-                <tr>
-                  <th>지출입</th>
-                  <th>내역</th>
-                  <th>금액</th>
-                  <th>태그</th>
-                  <th>날짜</th>
-                </tr>
-              </thead>
-
-              {filterValue === 'year' ? (
-                  <>
-                    {Object.entries(groupedMonthData).map(([key, data], index) => (
-                      <tbody key={index}>
-                        <tr className="monthHeader">
-                          <td colSpan="5">{`${key.split('-')[1]}월`}</td>
-                        </tr>
-                        {data.map((item, index) => (
-                          <tr key={index}>
-                            <td>{item.moneyValue}</td>
-                            <td>{item.content}</td>
-                            <td>{item.money.toLocaleString()}</td>
-                            <td>{formatTag(item.tag)}</td>
-                            <td>{formatDate(item.inputDt.toDate())}</td>
-                            {item.fixedId ? (
-                              <td>고정 지출입 입니다.</td>
-                            ) : (
-                              <td>
-                                <button type='button' onClick={() => handleDeleteData(item.id, item.moneyValue)}>삭제</button>
-                              </td>
-                            )}
-                          </tr>
-                        ))}
-                      </tbody>
-                    ))}
-                  </>
-                ) : (
-                  <tbody>
-                    {hoHoldDataList.map((item, index) => (
-                      <tr key={index}>
-                        <td>{item.moneyValue}</td>
-                        <td>{item.content}</td>
-                        <td>{item.money.toLocaleString()}</td>
-                        <td>{formatTag(item.tag)}</td>
-                        <td>{formatDate(item.inputDt.toDate())}</td>
-                        {item.fixedId ? (
-                          <td>고정 지출입 입니다.</td>
-                        ) : (
-                          <td>
-                            <button type='button' onClick={() => handleDeleteData(item.id, item.moneyValue)}>삭제</button>
-                          </td>
-                        )}
+          <div className={`${filterValue === 'year' ? '' : stylesHoHold.monthTable}`}>
+            {filterValue === 'year' ? (
+              Object.entries(groupedMonthData)
+                .sort(([a], [b]) => new Date(a) - new Date(b)) // 월별로 정렬
+                .map(([key, data], index) => (
+                  <table key={index} className={stylesHoHold.monthTable}>
+                    <thead>
+                      <tr>
+                        <th className={stylesHoHold.monthTitle} colSpan="6">&lt;{`${key.split('-')[1]}월`}&gt;</th>
                       </tr>
-                    ))}
-                  </tbody>
-                )}
-            </table>
+                      <tr>
+                        <th>지출입</th>
+                        <th>내역</th>
+                        <th>금액</th>
+                        <th>태그</th>
+                        <th>날짜</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.map((item, index) => (
+                        <tr key={index}>
+                          <td>{item.moneyValue}</td>
+                          <td className={stylesHoHold.yearDataOver}>{item.content}</td>
+                          <td>{item.money.toLocaleString().replace(/\B(?=(\d{3})+(?!\d))/g, '\n')}</td>
+                          <td className={stylesHoHold.yearDataOver}>{formatTag(item.tag)}</td>
+                          <td>{formatDate(item.inputDt.toDate())}</td>
+                          <td className={item.fixedId ? stylesHoHold.fixedData : null}>
+                            {item.fixedId ? '고정지출' : (
+                              <button className={stylesHoHold.deleteBtn} type='button' onClick={() => handleDeleteData(item.id, item.moneyValue)}>삭제</button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ))
+            ) : (
+              <table className={stylesHoHold.lastListTable}>
+                <thead>
+                  <tr>
+                    <th>지출입</th>
+                    <th>내역</th>
+                    <th>금액</th>
+                    <th>태그</th>
+                    <th>날짜</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {hoHoldDataList.map((item, index) => (
+                    <tr key={index}>
+                      <td>{item.moneyValue}</td>
+                      <td className={stylesHoHold.dataOver}>{item.content}</td>
+                      <td>{item.money.toLocaleString().replace(/\B(?=(\d{3})+(?!\d))/g, '\n')}</td>
+                      <td className={stylesHoHold.dataOver}>{formatTag(item.tag)}</td>
+                      <td>{formatDate(item.inputDt.toDate())}</td>
+                      <td className={item.fixedId ? stylesHoHold.fixedData : stylesHoHold.listItemAction}>
+                        {item.fixedId ? '고정지출' : (
+                          <button className={stylesHoHold.deleteBtn} type='button' onClick={() => handleDeleteData(item.id, item.moneyValue)}>삭제</button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-export default HoHold;

@@ -1,0 +1,190 @@
+.graphBarTitle,
+.percentTitle {
+    width: 100%;
+    text-align: center;
+}
+
+.graphBarDiv {
+    width: 100%;
+}
+
+/* 퍼센트 테이블 영역 **************************************/
+.percentDiv {
+    width: 100%;
+}
+/* 스마트폰 */
+@media (max-width: 767px) {
+    /* 그래프 영역 **************************************/
+    .graphBarTitle {
+        height: 40px;
+        font-size: 120%;
+    }
+
+    .graphBarDiv {
+        width: 100%;
+        height: 150px;
+    }
+
+    /* 퍼센트 테이블 영역 **************************************/
+    .percentDiv {
+        width: 100%;
+        height: 500px;
+    }
+    
+    .percentTitle {
+        height: 50px;
+        font-size: 120%;
+        margin-top: 60px;
+    }
+
+    .percentTableDiv{
+        width: 100%;
+        border: 1px solid #BBBEBB;
+        border-radius: 10px;
+        display: table;
+    }
+
+    .percentTable{
+        width: 100%;
+        margin: auto;
+        margin-bottom: 35px;
+        table-layout: fixed;
+        border-collapse: collapse;
+    }
+    
+    .percentTable th,
+    .percentTable td {
+        text-align: center;
+        vertical-align: middle;
+        padding-top: 40px;
+        width: 25%; /* 각 열의 너비를 25%로 설정 */
+    }
+
+    .percentTable th:last-child,
+    .percentTable td:last-child {
+        width: auto; /* 마지막 열은 너비를 자동으로 설정하여 공간을 활용 */
+    }
+
+    .percentTable td {
+        padding-top: 20px;
+    }
+}
+
+/* 태블릿 */
+@media (min-width: 768px) and (max-width: 1023px) {
+    /* 그래프 영역 **************************************/
+    .graphBarTitle {
+        height: 50px;
+        font-size: 120%;
+    }
+
+    .graphBarDiv {
+        width: 100%;
+        height: 150px;
+    }
+
+    /* 퍼센트 테이블 영역 **************************************/
+    .percentDiv {
+        width: 100%;
+        height: 500px;
+    }
+    
+    .percentTitle {
+        height: 50px;
+        font-size: 120%;
+        margin-top: 60px;
+    }
+
+    .percentTableDiv{
+        width: 100%;
+        border: 1px solid #BBBEBB;
+        border-radius: 10px;
+        display: table;
+    }
+
+    .percentTable{
+        width: 100%;
+        margin: auto;
+        margin-bottom: 35px;
+        table-layout: fixed;
+        border-collapse: collapse;
+    }
+    
+    .percentTable th,
+    .percentTable td {
+        text-align: center;
+        vertical-align: middle;
+        padding-top: 40px;
+        width: 25%; /* 각 열의 너비를 25%로 설정 */
+    }
+
+    .percentTable th:last-child,
+    .percentTable td:last-child {
+        width: auto; /* 마지막 열은 너비를 자동으로 설정하여 공간을 활용 */
+    }
+
+    .percentTable td {
+        padding-top: 20px;
+    }
+}
+
+/* 데스크톱 */
+@media (min-width: 1024px) {
+    /* 그래프 영역 **************************************/
+    .graphBarTitle {
+        height: 50px;
+        font-size: 150%;
+    }
+
+    .graphBarDiv {
+        width: 100%;
+        height: 200px;
+    }
+
+    /* 퍼센트 테이블 영역 **************************************/
+    .percentDiv {
+        width: 100%;
+        height: 500px;
+    }
+    
+    .percentTitle {
+        height: 50px;
+        font-size: 150%;
+        margin-top: 60px;
+    }
+
+    .percentTableDiv{
+        width: 100%;
+        border: 1px solid #BBBEBB;
+        border-radius: 10px;
+        margin-top: 20px;
+        display: table;
+    }
+
+    .percentTable{
+        width: 100%;
+        font-size: 120%;
+        margin: auto;
+        margin-top: 20px;
+        margin-bottom: 50px;
+        table-layout: fixed;
+        border-collapse: collapse;
+    }
+    
+    .percentTable th,
+    .percentTable td {
+        text-align: center;
+        vertical-align: middle;
+        padding-top: 40px;
+        width: 25%; /* 각 열의 너비를 25%로 설정 */
+    }
+
+    .percentTable th:last-child,
+    .percentTable td:last-child {
+        width: auto; /* 마지막 열은 너비를 자동으로 설정하여 공간을 활용 */
+    }
+
+    .percentTable td {
+        padding-top: 40px;
+    }
+}

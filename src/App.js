@@ -55,19 +55,42 @@ function App() {
   // 크기 여부를 확인하는 상태 변수
   const isMobile = useMediaQuery({ maxWidth: 767 });
 
-  // 스마트폰 크기 일 때 이미지 경로를 동적으로 설정
+  // 스마트폰 크기 일 때 로고 이미지 경로를 동적으로 설정
   const logoImage = isMobile ? '/image/logo/mLogo.png' : '/image/logo/wLogo.png';
 
   // 사이드 메뉴 초기값 false로 설정
   const [isSideMenuOpen, setSideMenuOpen] = useState(false);
+  const [menuIcon, setMenuIcon] = useState('/image/icon/menuIcon.png'); // 초기 아이콘 경로
 
   // 사이드 메뉴 이벤트 함수
   const toggleSideMenu = () => {
     setSideMenuOpen(!isSideMenuOpen);
+
+    // 메뉴 열기/닫기에 따라 아이콘 경로 변경
+    if (isSideMenuOpen) {
+      setMenuIcon('/image/icon/menuIcon.png');
+    } else {
+      setMenuIcon('/image/icon/xIcon.png');
+    }
   };
-  
-  // 스마트폰 크기 일 때 메뉴 아이콘 경로를 동적으로 설정
-  const menuIcon = isSideMenuOpen ? '/image/icon/xIcon.png' : '/image/icon/menuIcon.png';
+
+  const handleMouseOver = () => {
+    // 마우스 오버 시 아이콘 경로 변경
+    if (!isSideMenuOpen) {
+      setMenuIcon('/image/icon/menuIcon_hover.png');
+    } else {
+      setMenuIcon('/image/icon/xIcon_hover.png');
+    }
+  };
+
+  const handleMouseOut = () => {
+    // 마우스가 벗어났을 때 아이콘 경로 초기화
+    if (!isSideMenuOpen) {
+      setMenuIcon('/image/icon/menuIcon.png');
+    } else {
+      setMenuIcon('/image/icon/xIcon.png');
+    }
+  };
 
   // 현재 활성화된 버튼의 값을 저장하는 상태 변수
   const [activeButton, setActiveButton] = useState(null);
@@ -85,42 +108,51 @@ function App() {
 
   // 데이터 추가 함수
   const handleAddData = async (newData) => {
-    try {
-      const collectionName = newData.moneyValue === '수입' ? 'importCoin' : 'exportCoin';
-      await addDoc(collection(db, collectionName), newData);
-      setChanged(true)
-      console.log('Data added successfully');
-    } catch (error) {
-      console.error('Error adding document:', error);
+    if (window.confirm("작성하신 내용을 저장 하시겠습니까?")) {
+      try {
+        const collectionName = newData.moneyValue === '수입' ? 'importCoin' : 'exportCoin';
+        await addDoc(collection(db, collectionName), newData);
+        setChanged(true)
+        console.log('Data added successfully');
+      } catch (error) {
+        console.error('Error adding document:', error);
+      }
+    } else {
+      alert("작성하신 내용이 저장되지 않았습니다.");
     }
   };
 
   // fixed데이터 추가 함수
   const handleAddFixedData = async (fixedCoinData) => {
-    try {
-      await addDoc(collection(db, 'fixedCoin'), fixedCoinData);
-      setChanged(true)
-      console.log('Fixed Data added successfully');
-    } catch (error) {
-      console.error('Error adding document:', error);
+    if (window.confirm("작성하신 내용을 저장 하시겠습니까?")) {
+      try {
+        await addDoc(collection(db, 'fixedCoin'), fixedCoinData);
+        setChanged(true)
+        console.log('Fixed Data added successfully');
+      } catch (error) {
+        console.error('Error adding document:', error);
+      }
+    } else {
+      alert("작성하신 내용이 저장되지 않았습니다.");
     }
   };
 
   // 데이터 삭제
   const handleDeleteData = async (id, moneyValue, fixedId) => {
-    if (!fixedId) {
-      try {
-        // importCoin 또는 exportCoin에서 Id와 일치하는 데이터 삭제
-        const collectionName = moneyValue === '수입' ? 'importCoin' : 'exportCoin';
-        await deleteDoc(doc(db, collectionName, id));
+    if (window.confirm("해당 내용을 삭제 하시겠습니까?")) {
+      if (!fixedId) {
+        try {
+          // importCoin 또는 exportCoin에서 Id와 일치하는 데이터 삭제
+          const collectionName = moneyValue === '수입' ? 'importCoin' : 'exportCoin';
+          await deleteDoc(doc(db, collectionName, id));
 
-        console.log('Related data deleted successfully(일반)');
-        setChanged(true)
-      } catch (error) {
+          console.log('Related data deleted successfully(일반)');
+          setChanged(true)
+        } catch (error) {
           console.error('Error deleting document:', error);
-      }
-    } else{
-      try {
+        }
+      } else {
+        try {
           // fixedCoin에서 데이터 삭제
           await deleteDoc(doc(db, 'fixedCoin', id));
           console.log('FixedData deleted successfully');
@@ -129,14 +161,17 @@ function App() {
           const collectionToCheck = moneyValue === '수입' ? 'importCoin' : 'exportCoin';
           const querySnapshot = await getDocs(query(collection(db, collectionToCheck), where('fixedId', '==', fixedId)));
           querySnapshot.forEach(async (doc) => {
-              await deleteDoc(doc.ref);
+            await deleteDoc(doc.ref);
           });
 
           console.log('Related data deleted successfully');
           setChanged(true);
-      } catch (error) {
+        } catch (error) {
           console.error('Error deleting document:', error);
+        }
       }
+    } else {
+      alert("선택하신 내용이 삭제되지 않았습니다.");
     }
   };
 
@@ -147,20 +182,20 @@ function App() {
           <nav>
             <div className='topMenu'>
               <NavLink to='/' className={`navLinkButton ${applyButtonStyle('/')}`} onClick={() => setActiveButton('/')}>
-                  <img className='mainLogo' src={logoImage} alt="Logo" />
+                <img className='mainLogo' src={logoImage} alt="Logo" />
               </NavLink>
 
               {isMobile ?
                 (
                   <div>
                     <button className={`sideMenuToggle ${isSideMenuOpen ? 'active' : ''}`} onClick={toggleSideMenu}>
-                      <img src={menuIcon} alt='Menu'/>
+                      <img className="menuIcon" src={menuIcon} alt="Menu" onMouseOver={handleMouseOver} onMouseOut={handleMouseOut} />
                     </button>
                     <div className={`sideMenu ${isSideMenuOpen ? 'active' : ''}`}>
                       <ul>
-                        <li><NavLink to='/HoHold' className={`navLinkMButton ${applyButtonStyle('mHoHold')}`} onClick={() => setActiveButton('HoHold')}>가계부</NavLink></li>
-                        <li><NavLink to='/SpenPatt' className={`navLinkMButton ${applyButtonStyle('mSpenPatt')}`} onClick={() => setActiveButton('SpenPatt')}>소비패턴</NavLink></li>
-                        <li><NavLink to='/Fixed' className={`navLinkMButton ${applyButtonStyle('mFixed')}`} onClick={() => setActiveButton('Fixed')}>고정 지출입</NavLink></li>
+                        <li><NavLink to='/HoHold' className='navLinkMButton' activeClassName='activeMBtn' onClick={() => {setActiveButton('HoHold'); toggleSideMenu();}}>가계부</NavLink></li>
+                        <li><NavLink to='/SpenPatt' className='navLinkMButton' activeClassName='activeMBtn' onClick={() => {setActiveButton('SpenPatt'); toggleSideMenu();}}>소비패턴</NavLink></li>
+                        <li><NavLink to='/Fixed' className='navLinkMButton' activeClassName='activeMBtn' onClick={() => {setActiveButton('Fixed'); toggleSideMenu();}}>고정 지출입</NavLink></li>
                       </ul>
                     </div>
                   </div>

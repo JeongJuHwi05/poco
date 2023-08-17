@@ -1,0 +1,486 @@
+.contentDiv {
+    width: 100%;
+    border: 1px solid #BBBEBB;
+    border-radius: 10px;
+    margin-top: 30px;
+    margin-bottom: 50px;
+}
+
+input[type='date']::-webkit-clear-button,
+input[type='date']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+}
+
+.contentDiv {
+    width: 100%;
+    border: 1px solid #BBBEBB;
+    border-radius: 10px;
+    margin-top: 30px;
+    margin-bottom: 50px;
+}
+
+input[type='date']::-webkit-clear-button,
+input[type='date']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+}
+
+/* 카테고리 버튼 영역 */
+.dtCategoryBtn{
+    cursor: pointer;
+    transition: transform 0.3s, filter 0.3s; /* transition 효과 추가 */
+    color: #BBBEBB;
+    border-bottom: 3px solid #DCDBD9;
+}
+
+.dtCategoryBtn:hover {
+    transform: scale(1.05); /* 마우스 오버 시 이미지 크기 조정 */
+    color: rgba(17, 33, 56, 0.6);
+    border-bottom: 3px solid #a1caff;
+}
+
+.dtCategoryBtn.activeBtn {
+    color: #112138;
+    border-bottom: 3px solid #004aad;
+    font-weight: bold;
+}
+
+/* 자산 현황 영역 */
+.conditionTable{
+    width: 100%;
+    margin: auto;
+    text-align: center;
+}
+
+.conditionTable th{
+    width: 33%;
+}
+
+/* 달력 컴포넌트 영역 */
+.dtValueContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.dtValueCalenderDiv input {
+    height: 100%;
+}
+
+.dtValueCalenderDiv input:focus,
+DatePicker:focus {
+    outline: none;
+    border-bottom: 2px solid #FAC171;
+}
+
+.nowBtn{
+    height: 100%;
+    border: 2px solid #FAC171;
+    color: #112138;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: transform 0.3s, filter 0.3s; /* transition 효과 추가 */
+}
+
+.nowBtn:hover{
+    border: 2px solid #FAC171;
+    background-color: #FAC171;
+    color: #112138;
+    border-radius: 5px;
+    transform: scale(1.05); /* 마우스 오버 시 이미지 크기 조정 */
+    font-weight: bold;
+}
+
+/* 최근 내역 영역 */
+.lastList{
+    width: 100%;
+    border: 1px solid #BBBEBB;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+.lastListTitle {
+    display: flex;
+}
+
+.dtSortSelect{
+    text-align: center;
+    margin-left: 90%;
+    width: 100px;
+    border-bottom: 1px solid #BBBEBB;
+}
+
+.deleteBtn{
+    border: 2px solid #a1caff;
+    background-color: white;
+    color: #112138;
+    border-radius: 10px;
+    
+    cursor: pointer;
+    padding: 5px 15px;
+}
+
+.deleteBtn:hover{
+    border: 2px solid #a1caff;
+    background-color: #a1caff;
+    color: #112138;
+    font-weight: bold;
+}
+
+.fixedData{
+    color: #BBBEBB;
+}
+
+
+/* 스마트폰 */
+@media (max-width: 767px) {
+
+    /* 카테고리 버튼 ****************************************************/
+    .dtCategoryBtnDiv {
+        width: 200px;
+        height: 40px;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+    }
+
+    .dtCategoryBtn {
+        width: 25%;
+        height: 100%;
+        font-size: 120%;
+    }
+
+    /* 자산 현황 영역 ****************************************************/
+    .contentDiv {
+        height: 120px;
+    }
+
+    .conditionTable {
+        margin-top: 15px;
+        width: 100%;
+    }
+
+    .conditionTable td {
+        padding-top: 40px;
+    }
+
+    /* 달력 컴포넌트 영역 ****************************************************/
+    .dtValueCalenderDiv input {
+        width: 130px;
+    }
+
+    .nowBtn {
+        padding: 5px 15px;
+        margin-left: 10px;
+    }
+
+    /* 최근 내역 영역 ****************************************************/
+    .lastListTitle {
+        display: flex;
+        width: 90%;
+        margin-top: 20px;
+    }
+
+    .lastList {
+        width: 100%;
+        border-radius: 10px;
+    }
+
+    .subTitle {
+        word-break: keep-all;
+    }
+
+    .dtSortSelect {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .lastListTable {
+        width: 100%;
+        font-size: 90%;
+        margin-top: 5px;
+        padding-right: 20px;
+        padding-bottom: 20px;
+        table-layout: fixed;
+    }
+
+    .lastListTable th {
+        height: 50px;
+    }
+
+    .lastListTable th,
+    .lastListTable td {
+        padding: 10px;
+        text-align: center;
+        /* 가로 왼쪽 정렬 */
+        vertical-align: middle;
+        /* 세로 가운데 정렬 */
+    }
+
+    .dataOver,
+    .yearDataOver {
+        white-space: nowrap;
+        /* 글자 줄바꿈 방지 */
+        overflow: hidden;
+        /* 내용 넘치면 숨기기 */
+        text-overflow: ellipsis;
+        /* 말줄임 표시 (...) 추가 */
+    }
+
+    .deleteBtn {
+        width: 50px;
+        padding: 5px 10px;
+    }
+    
+    .monthTable {
+        width: 100%;
+        border: 1px solid #BBBEBB;
+        border-radius: 10px;
+        margin-top: 10px;
+        padding-bottom: 20px;
+        text-align: center;
+        font-size: 80%;
+    }
+
+    .monthTitle {
+        padding-top: 20px;
+        padding-bottom: 40px;
+    }
+
+    
+    .monthTable td{
+        white-space: nowrap; /* 글자 줄바꿈 방지 */
+        overflow: hidden; /* 내용 넘치면 숨기기 */
+        text-overflow: ellipsis; /* 말줄임 표시 (...) 추가 */
+    }
+}
+
+/* 태블릿 */
+@media (min-width: 768px) and (max-width: 1023px) {
+    /* 카테고리 버튼 ****************************************************/
+    .dtCategoryBtnDiv {
+        width: 300px;
+        height: 50px;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+    }
+
+    .dtCategoryBtn{
+        width: 25%;
+        height: 100%;
+        font-size: 130%;
+    }
+
+    /* 자산 현황 영역 ****************************************************/
+    .contentDiv{
+        height: 130px;
+    }
+
+    .conditionTable{
+        width: 60%;
+        font-size: 110%;
+    }
+
+    .conditionTable td {
+        padding-top: 40px;
+    }
+
+    /* 달력 컴포넌트 영역 ****************************************************/
+    .dtValueContainer {
+        font-size: 110%;
+    }
+
+    .dtValueCalenderDiv input {
+        width: 160px;
+    }
+
+    .nowBtn{
+        padding: 5px 15px;
+        margin-left: 10px;
+    }
+
+    /* 최근 내역 영역 ****************************************************/
+    .lastListTitle {
+        display: flex;
+    }
+
+    .subTitle{
+        width: 150px;
+        white-space: nowrap;/* 글자 줄바꿈 방지 */
+    }
+
+    .lastList{
+        width: 100%;
+        border-radius: 10px;
+    }
+
+    
+    .monthTable {
+        width: 100%;
+        border: 1px solid #BBBEBB;
+        border-radius: 10px;
+        margin-top: 10px;
+        padding-bottom: 20px;
+        text-align: center;
+    }
+
+    .monthTable td{
+        width: 10%;
+    }
+
+    .monthTitle {
+        font-size: 110%;
+        padding-top: 20px;
+        padding-bottom: 40px;
+    }
+
+    .dtSortSelect{
+        text-align: center;
+        margin-left: 70%;
+        margin-bottom: 10px;
+        width: 100px;
+    }
+
+    .lastListTable{
+        width: 100%;
+        padding-left: 20px;
+        margin-top: 5px;
+        padding-right: 30px;
+        padding-bottom: 20px;
+        table-layout: fixed;
+    }
+
+    .lastListTable th {
+        height: 50px;
+    }
+
+    .lastListTable th,
+    .lastListTable td {
+        padding: 5px;
+        text-align: center;   /* 가로 왼쪽 정렬 */
+        vertical-align: middle;  /* 세로 가운데 정렬 */
+    }
+
+    .deleteBtn{
+        padding: 5px 15px;
+    }
+}
+
+/* 데스크톱 */
+@media (min-width: 1024px) {
+
+    /* 카테고리 버튼 ****************************************************/
+    .dtCategoryBtnDiv {
+        width: 400px;
+        height: 50px;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 50px;
+    }
+
+    .dtCategoryBtn{
+        width: 25%;
+        height: 100%;
+        font-size: 140%;
+    }
+
+    /* 자산 현황 영역 ****************************************************/
+    .contentDiv{
+        height: 150px;
+    }
+
+    .conditionTable{
+        width: 60%;
+        font-size: 120%;
+        margin-top: 20px;
+    }
+
+    .conditionTable td {
+        padding-top: 40px;
+    }
+
+    /* 달력 컴포넌트 영역 ****************************************************/
+    .dtValueContainer {
+        padding: 20px;
+        font-size: 120%;
+    }
+
+    .dtValueCalenderDiv input {
+        width: 160px;
+    }
+
+    .nowBtn{
+        padding: 5px 20px;
+        margin-left: 20px;
+    }
+
+    /* 최근 내역 영역 ****************************************************/
+    .lastListTitle {
+        display: flex;
+    }
+
+    .subTitle{
+        font-size: 110%;
+    }
+
+    .lastList{
+        width: 100%;
+        border-radius: 10px;
+        margin-top: 30px;
+    }
+
+    .monthTable {
+        width: 100%;
+        border: 1px solid #BBBEBB;
+        border-radius: 10px;
+        margin-top: 10px;
+        padding-bottom: 20px;
+        text-align: center;
+    }
+
+    .monthTable td{
+        width: 10%;
+    }
+
+    .monthTitle {
+        font-size: 110%;
+        padding-top: 20px;
+        padding-bottom: 40px;
+    }
+
+    .dtSortSelect{
+        text-align: center;
+        margin-left: 90%;
+        width: 100px;
+    }
+
+    .lastListTable{
+        width: 100%;
+        padding-left: 20px;
+        margin-top: 20px;
+        padding-right: 30px;
+        padding-bottom: 10px;
+        table-layout: fixed;
+    }
+
+    .lastListTable th {
+        height: 50px;
+    }
+
+    .lastListTable th,
+    .lastListTable td {
+        padding: 5px;
+        text-align: center;   /* 가로 왼쪽 정렬 */
+        vertical-align: middle;  /* 세로 가운데 정렬 */
+    }
+
+    .deleteBtn{
+        padding: 5px 15px;
+    }
+
+}
+

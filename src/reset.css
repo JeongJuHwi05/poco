@@ -43,3 +43,7 @@ html {
 *, *::before, *::after {
   box-sizing: inherit;
 }
+
+.app {
+  margin: 0 20px;
+}

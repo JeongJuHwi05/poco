@@ -13,16 +13,18 @@ nav ul {
 }
 
 nav button {
-  width: 150px;
-  height: 50px;
+  width: 200px;
+  height: 70px;
   border-radius: 20px;
   cursor: pointer;
+  transition: transform 0.3s, filter 0.3s; /* transition 효과 추가 */
 }
 
 /* 상단 메뉴 버튼 마우스 오버시 이벤트 */
 li a button:hover {
   background-color: #DCDBD9;
   color: #112138;
+  transform: scale(1.05); /* 마우스 오버 시 이미지 크기 조정 */
 }
 
 /* 상단 메뉴 버튼 클릭 시 이벤트 */
@@ -50,7 +52,7 @@ li a button:hover {
     right: -250px;
     width: 250px;
     height: 100%;
-    background-color: rgb(161, 202, 255);
+    background-color: #FAC171;
     transition: right 0.3s ease-in-out;
     padding-top: 60px;
     z-index: 1;
@@ -73,20 +75,21 @@ li a button:hover {
   }
 
   .sideMenu ul li a {
-    color: white;
+    color: #112138;
     text-decoration: none;
     font-weight: normal;
   }
 
   .sideMenu ul li a:hover{
-    color: rgb(0, 74, 173);
+    color: #004aad;
     font-weight: 800;
     font-size: 110%;
+    text-decoration: underline;
   }
 
   /* 메뉴 버튼 클릭 시 이벤트 */
   .navLinkMButton.activeMBtn {
-    color: rgb(0, 74, 173);
+    color: #004aad;
     font-size: 110%;
     font-weight: 800;
   }
@@ -100,25 +103,32 @@ li a button:hover {
     cursor: pointer;
     z-index: 2;
   }
-  
-  .sideMenuToggle img{
+
+  /* 메뉴아이콘 */
+  .menuIcon {
     width: 32px;
     height: 30px;
     display: flex;
     align-items: center;
+    transition: transform 0.3s, filter 0.3s; /* transition 효과 추가 */
   }
 
-  .sideMenuToggle img:hover{
-    width: 35px;
-    height: auto;
+  /* 메뉴아이콘 마우스 오버 시 */
+  .menuIcon:hover {
+    transform: scale(1.1);
+    /* 마우스 오버 시 이미지 크기 조정 */
+    filter: brightness(1.2);
+    /* 밝기 조정 */
   }
 
+  /* 메뉴 X아이콘 */
   .sideMenuToggle.active{
     width: auto;
     height: auto;
     right: 10px;
   }
 
+  /* ? */
   .sideMenuToggle.active img{
     width: 30px;
     height: auto;
@@ -175,17 +185,17 @@ li a button:hover {
   }
 
   .mainLogo {
-    width: 200px;
+    width: 180px;
   }
 
   nav {
     height: 75px;
-    font-size: 180%;
+    font-size: 170%;
     font-weight: 700;
   }
 
   nav ul {
-    width: 800px;
+    width: 900px;
     height: 75px;
     display: flex;
     margin: auto;

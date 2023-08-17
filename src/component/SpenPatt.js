@@ -1,5 +1,5 @@
 import '../reset.css';
-import '../css/SpenPatt.css';
+import stylesSpenPatt from '../css/SpenPatt.module.css';
 
 import React, { useEffect, useState } from "react";
 //npm install react-chartjs-2 chart.js
@@ -7,7 +7,7 @@ import { Bar } from 'react-chartjs-2';
 import { CategoryScale, Chart, LinearScale, BarElement } from "chart.js";
 Chart.register(CategoryScale, LinearScale, BarElement);
 
-function SpenPatt({ exportData }) {
+export default function SpenPatt({ exportData }) {
     // 데이터 로딩 상태를 관리
     const [dataLoaded, setDataLoaded] = useState(false);
 
@@ -104,6 +104,7 @@ function SpenPatt({ exportData }) {
     tagPercentages.sort((a, b) => a.percentage - b.percentage);
 
     const chartOptions = {
+        maintainAspectRatio: false,
         indexAxis: 'y',
         scales: {
             x: {
@@ -122,10 +123,10 @@ function SpenPatt({ exportData }) {
     };
 
     const colors = [
-        'rgba(255, 99, 132, 0.8)',
-        'rgba(54, 162, 235, 0.8)',
-        'rgba(255, 206, 86, 0.8)',
-        'rgba(75, 192, 192, 0.8)'
+        '#F7EFE2',
+        '#a1caff',
+        '#004aad',
+        '#112138'
     ];
 
     const chartData = {
@@ -141,46 +142,53 @@ function SpenPatt({ exportData }) {
 
     return (
         <div>
+            <h3 className={stylesSpenPatt.graphBarTitle}>{currentYearMonth.month + 1}월 달 소비 패턴</h3>
             {dataLoaded ? (
                 <div>
-                    <div>
+
+                    <div className={stylesSpenPatt.graphBarDiv}>
                         <Bar
+                            className={stylesSpenPatt.graphBar}
                             data={chartData}
                             options={chartOptions}
                         />
                     </div>
 
-                    <hr />
-                    
-                    <h3>태그별 지출 퍼센트</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>태그</th>
-                                <th>지출 금액</th>
-                                <th>비중</th>
-                                <th>색상</th> {/* 색상 열 추가 */}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {tagPercentages.slice().reverse().map((tagData, index) => (
-                                <tr key={index}>
-                                    <td>{tagData.tag}</td>
-                                    <td>{tagData.totalAmount.toLocaleString()}</td>
-                                    <td>{formatPercentage(tagData.percentage)} %</td>
-                                    <td>
-                                        <div
-                                            style={{
-                                                width: '20px',
-                                                height: '20px',
-                                                backgroundColor: colors[(tagPercentages.length - 1 - index) % colors.length], // 반대로 색상 선택
-                                            }}
-                                        ></div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    <div className={stylesSpenPatt.percentDiv}>
+                        <h3 className={stylesSpenPatt.percentTitle}>태그별 지출 퍼센트</h3>
+                        <div className={stylesSpenPatt.percentTableDiv}>
+                            <table className={stylesSpenPatt.percentTable}>
+                                <thead>
+                                    <tr>
+                                        <th>태그</th>
+                                        <th>지출 금액</th>
+                                        <th>비중</th>
+                                        <th>색상</th> {/* 색상 열 추가 */}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {tagPercentages.slice().reverse().map((tagData, index) => (
+                                        <tr key={index}>
+                                            <td>{tagData.tag}</td>
+                                            <td>{tagData.totalAmount.toLocaleString()}</td>
+                                            <td>{formatPercentage(tagData.percentage)} %</td>
+                                            {/* <td className={stylesSpenPatt.percentColorCell} style={{ "--color": colors[(tagPercentages.length - 1 - index) % colors.length] }}></td> */}
+                                            <td>
+                                                <div
+                                                    style={{
+                                                        width: '20px',
+                                                        height: '20px',
+                                                        backgroundColor: colors[(tagPercentages.length - 1 - index) % colors.length], // 반대로 색상 선택
+                                                        margin: 'auto', // 가운데 정렬
+                                                    }}
+                                                ></div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             ) : (
                 <p>Loading...</p>
@@ -188,5 +196,3 @@ function SpenPatt({ exportData }) {
         </div>
     )
 }
-
-export default SpenPatt;

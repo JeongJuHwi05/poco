@@ -1,9 +1,9 @@
-import '../css/Home.css';
 import '../reset.css';
+import stylesHome from '../css/Home.module.css';
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 
-function Home({ importData, exportData, onAddData }) {
+export default function Home({ importData, exportData, onAddData }) {
   // 달력 데이터 변경 시
   const handleDateChange = e => {
     setInputDtValue(e.target.value);
@@ -83,23 +83,54 @@ function Home({ importData, exportData, onAddData }) {
       return bDate - aDate; // Sort by inputDt
     });
   
-  // 최근 내역 날짜포맷 수정
-  const formatDate = (date) => {
-    const optionsDt = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    return new Date(date).toLocaleDateString('ko-KR', optionsDt).replace(/ /g, '').replace(/\./g, '-').slice(0, -1);
-  };
-  
   // 최근 내역에서 보여줄 데이터 8개
   const [visibleDataCount, setVisibleDataCount] = useState(8);
+
   // 데이터 배열을 필요한 갯수만큼 slice하기
   const visibleData = data.slice(0, visibleDataCount);
   const [isShowMore, setIsShowMore] = useState(false);
-  const [divHeight, setDivHeight] = useState(370); // 초기 높이값 설정
+
+  // 높이 값 설정 함수
+  const setDivHeight = () => {
+    const windowWidth = window.innerWidth;
+    if (windowWidth >= 1024) {
+      return '370px';
+    } else if (windowWidth >= 768 && windowWidth < 1024) {
+      return '360px';
+    } else {
+      return '280px';
+    }
+  };
+  
+  const [divHeight, setDivHeightState] = useState(setDivHeight()); // 초기 높이값 설정
 
   // 더보기 버튼 클릭하면 8개씩 더 가져오기
   const showMore = () => {
-    const newDivHeight = divHeight + (data.length - 8) * 35;
-    console.log(newDivHeight);
+    window.addEventListener('resize', () => {
+      hideMore();
+      setDivHeightState(setDivHeight());
+    });
+
+    // 8개 이상일 때 기본적인 8개의 데이터 외에 남은 데이터
+    const restData = data.length - 8;
+    var addRowHeight = 0;
+
+    // 해당하는 media의 펼쳐지는 row값
+    switch (divHeight) {
+      case "370px":
+        addRowHeight = 35;
+        break;
+      case "360px":
+        addRowHeight = 30;
+        break;
+      case "280px":
+        addRowHeight = 25;
+        break;
+      default:
+        addRowHeight = 35;
+    }
+     
+    var newDivHeight = divHeight + restData * addRowHeight;
 
     setVisibleDataCount(data.length);
     setDivHeight(newDivHeight);
@@ -111,6 +142,17 @@ function Home({ importData, exportData, onAddData }) {
     setDivHeight(370);
     setIsShowMore(false);
   };
+  
+  
+  // 최근 내역 날짜포맷 수정
+  const formatDate = (date) => {
+    const optionsDt = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    if (divHeight === "280px") {
+      return new Date(date).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' }).replace('.', '-').slice(0, -1);
+    } else {
+      return new Date(date).toLocaleDateString('ko-KR', optionsDt).replace(/ /g, '').replace(/\./g, '-').slice(0, -1);
+    }
+  };
 
   // 태그가 있을 때만 #을 붙여서 리턴
   const formatTag = (tag) => {
@@ -119,55 +161,76 @@ function Home({ importData, exportData, onAddData }) {
     }
   };
 
+  // 현재 활성화된 버튼의 값을 저장하는 상태 변수
+  const [activeButton, setActiveButton] = useState(null);
+
+  // 클릭한 버튼에 스타일을 적용하는 함수
+  const applyButtonStyle = (buttonValue) => {
+    return activeButton === buttonValue ? stylesHome.moneyValueBtnActive : '';
+  };
+
+  const handleMoneyValueButtonClick = (value) => {
+    setSelectedMoneyValue(value);
+    setActiveButton(value);
+    applyButtonStyle(value);
+  };
+
   return (
-    <div className='homeApp'>
-      <div className='contentDiv'>
-        <h3 className='subTitle'>새로운 소비 내역 추가하기</h3>
-        <div className='tableDiv newInput'>
-          <table className="inputTable">
+    <div className='app'>
+      <div className={stylesHome.contentDiv}>
+        <h3 className={stylesHome.subTitle}>새로운 소비 내역 추가하기</h3>
+        <div className={stylesHome.newInput}>
+          <table className={stylesHome.inputTable}>
             <tbody>
               <tr>
                 <th>지출입</th>
-                <td>
-                  <select value={selectedMoneyValue} onChange={(e) => setSelectedMoneyValue(e.target.value)}>
-                    <option value="수입">수입</option>
-                    <option value="지출">지출</option>
-                  </select>
-                </td>
+                {window.innerWidth <= 767 ? (
+                  <td className={stylesHome.moneyValueBtnDiv}>
+                    <button className={`${stylesHome.moneyValueBtn} ${activeButton === '수입' ? stylesHome.moneyValueBtnActive : ''}`} onClick={() => handleMoneyValueButtonClick('수입')}>수입</button>
+                    <button className={`${stylesHome.moneyValueBtn} ${activeButton === '지출' ? stylesHome.moneyValueBtnActive : ''}`} onClick={() => handleMoneyValueButtonClick('지출')}>지출</button>
+                  </td>
+                ) : (
+                  <td>
+                    <select className={stylesHome.tableSelect} value={selectedMoneyValue} onChange={(e) => setSelectedMoneyValue(e.target.value)}>
+                      <option value="수입">수입</option>
+                      <option value="지출">지출</option>
+                    </select>
+                  </td>
+                )}
 
                 <th>내역</th>
                 <td>
-                  <input type="text" value={inputContentValue} onChange={(e) => setContentValue(e.target.value)} placeholder="내역을 입력해주세요." />
+                  <input className={stylesHome.tableInput} type="text" value={inputContentValue} onChange={(e) => setContentValue(e.target.value)} placeholder="내역을 입력해주세요." />
                 </td>
 
                 <th>금액</th>
                 <td>
-                  <input type="text" value={inputMoneyValue} onChange={(e) => setMoneyValue(e.target.value)} placeholder="금액을 입력해주세요." />{" "} 원
+                  <input className={stylesHome.tableInput} type="number" value={inputMoneyValue} onChange={(e) => setMoneyValue(e.target.value)} placeholder="금액을 입력해주세요." />{" "} 원
                 </td>
 
                 <th>날짜</th>
                 <td>
-                  <input type="date" value={inputInputDtValue || ""} onChange={handleDateChange} />
+                  <input className={stylesHome.tableInput} type="date" value={inputInputDtValue || ""} onChange={handleDateChange} />
                 </td>
 
                 <th>태그</th>
                 <td>
-                  #<input type="text" value={inputTagValue} onChange={(e) => setTagValue(e.target.value)} placeholder="태그를 입력해주세요." />
+                  #<input className={stylesHome.tableInput} type="text" value={inputTagValue} onChange={(e) => setTagValue(e.target.value)} placeholder="태그를 입력해주세요." />
                 </td>
               </tr>
             </tbody>
           </table>
 
-          <button className='addBtn' type='button' onClick={handleAddData}>추가하기</button>
+          <button className={stylesHome.addBtn} type='button' onClick={handleAddData}>추가하기</button>
         </div>
       </div>
 
-      <div className='contentDiv'>
-        <h3>이번달 자산 현황</h3>
+      <div className={stylesHome.contentDiv}>
+        <h3>이번 달 자산 현황</h3>
         <h2>{ getCurrentMonthBalance().toLocaleString() } 원</h2>
 
-        <div className='tableDiv conditionDiv'>
-          <table className="conditionTable">
+        <div className={`${stylesHome.tableDiv} ${stylesHome.conditionDiv}`}>
+          <table className={stylesHome.conditionTable}>
             <thead>
               <tr>
                 <th>수입</th>
@@ -187,9 +250,9 @@ function Home({ importData, exportData, onAddData }) {
       </div>
 
       <div>
-        <h3 className='subTitle'>최근 내역</h3>
-        <div className='tableDiv' style={{ height: `${divHeight}px` }}>
-          <table className="lastListTable">
+        <h3 className={stylesHome.subTitle}>이번 달 최근 내역</h3>
+        <div className={`${stylesHome.tableDiv} ${stylesHome.lastListDiv}`} style={{ height: `${divHeight}px` }}>
+          <table className={stylesHome.lastListTable}>
             <thead>
               <tr>
                 <th>지출입</th>
@@ -204,9 +267,9 @@ function Home({ importData, exportData, onAddData }) {
               {visibleData.map((item, index) => (
                 <tr key={index}>
                   <td>{item.moneyValue}</td>
-                  <td>{item.content}</td>
+                  <td className={stylesHome.dataAlignLeft}>{item.content}</td>
                   <td>{item.money.toLocaleString()}</td>
-                  <td className="align-left">{formatTag(item.tag)}</td>
+                  <td className={stylesHome.alignLeft}>{formatTag(item.tag)}</td>
                   <td>{formatDate(item.inputDt.toDate())}</td>
                 </tr>
               ))}
@@ -215,7 +278,7 @@ function Home({ importData, exportData, onAddData }) {
         </div>
 
         {visibleData.length >= 8 && (
-          <button className='moreBtn' type='button' onClick={isShowMore ? hideMore : showMore}>
+          <button className={stylesHome.moreBtn} type='button' onClick={isShowMore ? hideMore : showMore}>
             {isShowMore ? '접기' : '더보기'}
           </button>
         )}
@@ -223,5 +286,3 @@ function Home({ importData, exportData, onAddData }) {
     </div>
   );
 }
-
-export default Home;
