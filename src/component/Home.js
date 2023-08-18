@@ -1,7 +1,7 @@
 import '../reset.css';
 import stylesHome from '../css/Home.module.css';
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 
 export default function Home({ importData, exportData, onAddData }) {
   // 달력 데이터 변경 시

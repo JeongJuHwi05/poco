@@ -93,7 +93,7 @@ function Fixed({ fixedData, onAddData, onFixedAddData, onDeleteData }) {
 
     // 날짜포맷 수정
     const formatDate = (date) => {
-      const optionsDt = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    //   const optionsDt = { year: 'numeric', month: '2-digit', day: '2-digit' };
       if (windowWidth >= 1024) {
         return new Date(date).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit' }).replace(/\./g, '-').slice(0, -1);
       } else if (windowWidth >= 768 && windowWidth < 1024) {
