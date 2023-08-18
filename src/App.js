@@ -108,7 +108,6 @@ function App() {
 
   // 데이터 추가 함수
   const handleAddData = async (newData) => {
-    if (window.confirm("작성하신 내용을 저장 하시겠습니까?")) {
       try {
         const collectionName = newData.moneyValue === '수입' ? 'importCoin' : 'exportCoin';
         await addDoc(collection(db, collectionName), newData);
@@ -117,14 +116,10 @@ function App() {
       } catch (error) {
         console.error('Error adding document:', error);
       }
-    } else {
-      alert("작성하신 내용이 저장되지 않았습니다.");
-    }
   };
 
   // fixed데이터 추가 함수
   const handleAddFixedData = async (fixedCoinData) => {
-    if (window.confirm("작성하신 내용을 저장 하시겠습니까?")) {
       try {
         await addDoc(collection(db, 'fixedCoin'), fixedCoinData);
         setChanged(true)
@@ -132,14 +127,10 @@ function App() {
       } catch (error) {
         console.error('Error adding document:', error);
       }
-    } else {
-      alert("작성하신 내용이 저장되지 않았습니다.");
-    }
   };
 
   // 데이터 삭제
   const handleDeleteData = async (id, moneyValue, fixedId) => {
-    if (window.confirm("해당 내용을 삭제 하시겠습니까?")) {
       if (!fixedId) {
         try {
           // importCoin 또는 exportCoin에서 Id와 일치하는 데이터 삭제
@@ -151,7 +142,7 @@ function App() {
         } catch (error) {
           console.error('Error deleting document:', error);
         }
-      } else {
+      }else {
         try {
           // fixedCoin에서 데이터 삭제
           await deleteDoc(doc(db, 'fixedCoin', id));
@@ -169,9 +160,6 @@ function App() {
         } catch (error) {
           console.error('Error deleting document:', error);
         }
-      }
-    } else {
-      alert("선택하신 내용이 삭제되지 않았습니다.");
     }
   };
 
