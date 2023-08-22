@@ -131,35 +131,35 @@ function App() {
 
   // 데이터 삭제
   const handleDeleteData = async (id, moneyValue, fixedId) => {
-      if (!fixedId) {
-        try {
-          // importCoin 또는 exportCoin에서 Id와 일치하는 데이터 삭제
-          const collectionName = moneyValue === '수입' ? 'importCoin' : 'exportCoin';
-          await deleteDoc(doc(db, collectionName, id));
+    if (!fixedId) {
+      try {
+        // importCoin 또는 exportCoin에서 Id와 일치하는 데이터 삭제
+        const collectionName = moneyValue === '수입' ? 'importCoin' : 'exportCoin';
+        await deleteDoc(doc(db, collectionName, id));
 
-          console.log('Related data deleted successfully(일반)');
-          setChanged(true)
-        } catch (error) {
-          console.error('Error deleting document:', error);
-        }
-      }else {
-        try {
-          // fixedCoin에서 데이터 삭제
-          await deleteDoc(doc(db, 'fixedCoin', id));
-          console.log('FixedData deleted successfully');
+        console.log('Related data deleted successfully(일반)');
+        setChanged(true)
+      } catch (error) {
+        console.error('Error deleting document:', error);
+      }
+    }else {
+      try {
+        // fixedCoin에서 데이터 삭제
+        await deleteDoc(doc(db, 'fixedCoin', id));
+        console.log('FixedData deleted successfully');
 
-          // importCoin 또는 exportCoin에서 해당 fixedId와 일치하는 데이터 삭제
-          const collectionToCheck = moneyValue === '수입' ? 'importCoin' : 'exportCoin';
-          const querySnapshot = await getDocs(query(collection(db, collectionToCheck), where('fixedId', '==', fixedId)));
-          querySnapshot.forEach(async (doc) => {
-            await deleteDoc(doc.ref);
-          });
+        // importCoin 또는 exportCoin에서 해당 fixedId와 일치하는 데이터 삭제
+        const collectionToCheck = moneyValue === '수입' ? 'importCoin' : 'exportCoin';
+        const querySnapshot = await getDocs(query(collection(db, collectionToCheck), where('fixedId', '==', fixedId)));
+        querySnapshot.forEach(async (doc) => {
+          await deleteDoc(doc.ref);
+        });
 
-          console.log('Related data deleted successfully');
-          setChanged(true);
-        } catch (error) {
-          console.error('Error deleting document:', error);
-        }
+        console.log('Related data deleted successfully');
+        setChanged(true);
+      } catch (error) {
+        console.error('Error deleting document:', error);
+      }
     }
   };
 
